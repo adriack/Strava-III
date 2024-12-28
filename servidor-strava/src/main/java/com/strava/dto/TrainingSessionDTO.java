@@ -22,38 +22,36 @@ public class TrainingSessionDTO {
     @Schema(description = "ID of the training session.", example = "550e8400-e29b-41d4-a716-446655440000", nullable = true, hidden = true)
     private UUID id;
 
-    @NotBlank(message = "Title is required.")
+    @NotBlank(message = "Title is required.", groups = PostValidation.class)
     @Schema(description = "Title of the training session.", example = "Morning Run")
     private String title;
 
-    @NotNull(message = "Sport is required.")
+    @NotNull(message = "Sport is required.", groups = PostValidation.class)
     @Schema(description = "Type of sport for the session.", example = "RUNNING")
     private SportType sport;
 
-    @NotNull(message = "Distance is required.")
+    @NotNull(message = "Distance is required.", groups = PostValidation.class)
     @Positive(message = "Distance must be greater than zero.")
     @Schema(description = "Distance covered during the session in kilometers.", example = "5.0")
     private Double distance;
 
-    @NotNull(message = "Start date is required.")
+    @NotNull(message = "Start date is required.", groups = PostValidation.class)
     @PastOrPresent(message = "Start date cannot be in the future.")
     @Schema(description = "Date when the session started.", example = "2024-12-11")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @NotNull(message = "Start time is required.")
+    @NotNull(message = "Start time is required.", groups = PostValidation.class)
     @Schema(description = "Time when the session started.", example = "06:30")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
-    @NotNull(message = "Duration is required.")
-    @Positive(message = "Duration must be greater than zero.")
-    @Schema(description = "Duration of the session in minutes.", example = "30")
+    @NotNull(message = "Duration is required.", groups = PostValidation.class)
+    @Schema(description = "Duration of the session in minutes.", example = "30.0")
     private Double duration;
 
     @JsonCreator
     public TrainingSessionDTO(
-            @JsonProperty("id") UUID id,
             @JsonProperty("title") String title,
             @JsonProperty("sport") SportType sport,
             @JsonProperty("distance") Double distance,
@@ -61,7 +59,6 @@ public class TrainingSessionDTO {
             @JsonProperty("startTime") LocalTime startTime,
             @JsonProperty("duration") Double duration) {
 
-        this.id = id;
         this.title = title;
         this.sport = sport;
         this.distance = distance;
@@ -101,4 +98,7 @@ public class TrainingSessionDTO {
 
     public Double getDuration() { return duration; }
     public void setDuration(Double duration) { this.duration = duration; }
+
+    // Grupo de validación para POST
+    public interface PostValidation {}
 }

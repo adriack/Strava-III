@@ -10,10 +10,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.strava.entity.TrainingSession;
+import com.strava.entity.enumeration.SportType;
 
 @Repository
 public interface TrainingSessionDAO extends JpaRepository<TrainingSession, UUID> {
 
-    @Query("SELECT t FROM TrainingSession t WHERE t.user.id = :userId AND (t.startDate >= :startDate OR :startDate IS NULL) AND (t.startDate <= :endDate OR :endDate IS NULL) ORDER BY t.startDate DESC")
-    Page<TrainingSession> findFilteredSessions(UUID userId, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    @Query("SELECT s FROM TrainingSession s JOIN s.user u WHERE (:userId IS NULL OR u.id = :userId) " +
+    "AND (:sport IS NULL OR s.sport = :sport) " +
+    "AND (:startDate IS NULL OR s.startDate >= :startDate) " +
+    "AND (:endDate IS NULL OR s.startDate <= :endDate) " +
+    "ORDER BY s.startDate DESC")
+    Page<TrainingSession> findFilteredSessions(UUID userId, LocalDate startDate, LocalDate endDate, SportType sport, Pageable pageable);
+
 }

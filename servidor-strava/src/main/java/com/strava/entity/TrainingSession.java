@@ -1,12 +1,7 @@
 package com.strava.entity;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.UUID;
-
 import com.strava.dto.TrainingSessionDTO;
 import com.strava.entity.enumeration.SportType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity  // Marca esta clase como una entidad persistente
 @Table(name = "sessions")

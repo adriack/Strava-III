@@ -1,11 +1,10 @@
 package com.strava.facade;
 
-import java.time.LocalDate;
-import java.util.Map;
+import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.strava.dto.ChallengeDTO;
-import com.strava.dto.ChallengeFilterDTO;
+import com.strava.dto.FilterDTO;
 import com.strava.dto.ResponseWrapper;
 import com.strava.dto.TokenDTO;
-import com.strava.entity.enumeration.SportType;
 import com.strava.service.ChallengeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,8 +45,7 @@ public class ChallengeController {
     public ResponseEntity<?> createChallenge(@RequestParam String token, @RequestBody @Valid ChallengeDTO challengeDTO) {
         TokenDTO tokenDTO = new TokenDTO(token);
         ResponseWrapper<String> response = challengeService.createChallenge(tokenDTO, challengeDTO);
-
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode())).body(response);
+        return response.toResponseEntity();
     }
 
     @Operation(summary = "Get active challenges", description = "Fetches active challenges based on filters like date and sport.")
@@ -58,40 +55,24 @@ public class ChallengeController {
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token")
     })
     @GetMapping
-    public ResponseEntity<?> getActiveChallenges(@RequestParam(required = false) String startDate,
-                                                  @RequestParam(required = false) String endDate,
-                                                  @RequestParam(required = false) SportType sport,
-                                                  @RequestParam(required = false) Integer limit) {
-        ChallengeFilterDTO filterDTO = new ChallengeFilterDTO();
-        try {
-            if (startDate != null) {
-                filterDTO.setStartDate(LocalDate.parse(startDate));
-            }
-            if (endDate != null) {
-                filterDTO.setEndDate(LocalDate.parse(endDate));
-            }
-            filterDTO.setSport(sport);
-            filterDTO.setLimit(limit);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Invalid date format."));
-        }
-
+    public ResponseEntity<?> getActiveChallenges(@ModelAttribute @Valid FilterDTO filterDTO) {
         ResponseWrapper<?> response = challengeService.getActiveChallenges(filterDTO);
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode())).body(response);
+        return response.toResponseEntity();
     }
 
     @Operation(summary = "Accept a challenge", description = "Accepts a challenge for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Challenge accepted successfully"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token")
+        @ApiResponse(responseCode = "400", description = "Bad Request - Challenge already accepted or has ended"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token"),
+        @ApiResponse(responseCode = "404", description = "Not Found - Challenge not found")
     })
     @PostMapping("/{challengeId}/accept")
     @Transactional
-    public ResponseEntity<?> acceptChallenge(@PathVariable String challengeId, @RequestParam String token) {
+    public ResponseEntity<?> acceptChallenge(@PathVariable UUID challengeId, @RequestParam String token) {
         TokenDTO tokenDTO = new TokenDTO(token);
         ResponseWrapper<String> response = challengeService.acceptChallenge(tokenDTO, challengeId);
-
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode())).body(response);
+        return response.toResponseEntity();
     }
 
     @Operation(summary = "Get accepted challenges", description = "Fetches challenges accepted by a user.")
@@ -100,10 +81,33 @@ public class ChallengeController {
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token")
     })
     @GetMapping("/accepted")
-    public ResponseEntity<?> getAcceptedChallenges(@RequestParam String token) {
+    public ResponseEntity<?> getAcceptedChallenges(@RequestParam String token, @RequestParam(defaultValue = "true") boolean includeProgress) {
         TokenDTO tokenDTO = new TokenDTO(token);
-        ResponseWrapper<?> response = challengeService.getAcceptedChallenges(tokenDTO);
-
-        return ResponseEntity.status(HttpStatus.valueOf(response.getStatusCode())).body(response);
+        ResponseWrapper<?> response = challengeService.getAcceptedChallenges(tokenDTO, includeProgress);
+        return response.toResponseEntity();
     }
+
+    @Operation(summary = "Get created challenges", description = "Fetches challenges created by a user.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Created challenges retrieved successfully"),
+        @ApiResponse(responseCode = "404", description = "Not Found - User not found")
+    })
+    @GetMapping("/created")
+    public ResponseEntity<?> getCreatedChallenges(@RequestParam UUID userId) {
+        ResponseWrapper<?> response = challengeService.getCreatedChallenges(userId);
+        return response.toResponseEntity();
+    }
+
+    @Operation(summary = "Get challenge participants with progress", description = "Fetches participants of a challenge along with their progress.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Participants with progress retrieved successfully"),
+        @ApiResponse(responseCode = "404", description = "Not Found - Challenge not found")
+    })
+    @GetMapping("/{challengeId}/participants")
+    @Transactional
+    public ResponseEntity<?> getChallengeParticipants(@PathVariable UUID challengeId) {
+        ResponseWrapper<?> response = challengeService.getChallengeParticipants(challengeId);
+        return response.toResponseEntity();
+    }
+
 }

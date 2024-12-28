@@ -1,6 +1,7 @@
 package com.strava.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,7 +95,7 @@ public class UserService {
         UserToken userToken = new UserToken(user, token);
         tokenDAO.save(userToken);
 
-        return new ResponseWrapper<>(200, "Login successful.", token);
+        return new ResponseWrapper<>(200, "Login successful.", "Token: " + token);
     }
 
     // Cerrar sesión de usuario
@@ -125,6 +126,9 @@ public class UserService {
         return user.get();
     }
     
+    public User getUserById(UUID userId) {
+        return userDAO.findById(userId).orElse(null);
+    }
 
     // Método para generar un token único basado en el timestamp actual
     private String generateToken() {

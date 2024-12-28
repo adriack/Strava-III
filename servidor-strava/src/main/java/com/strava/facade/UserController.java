@@ -1,9 +1,5 @@
 package com.strava.facade;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,14 +39,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserDTO user) {
         var response = userService.registerUser(user);
-        return switch (response.getStatusCode()) {
-            case 201 -> ResponseEntity.status(HttpStatus.CREATED).body(response.getMessage());
-            case 401 -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.getMessage());
-            case 400 -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
-            case 500 -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(response.getMessage() != null ? response.getMessage() : "Unexpected error during registration.");
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error during registration.");
-        };
+        return response.toResponseEntity();
     }
 
     @Operation(
@@ -66,19 +55,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginDTO login) {
         var response = userService.loginUser(login);
-        return switch (response.getStatusCode()) {
-            case 200 -> {
-                Map<String, String> responseMap = new HashMap<>();
-                responseMap.put("message", response.getMessage());
-                responseMap.put("token", (String) response.getData());
-                yield ResponseEntity.ok(responseMap);
-            }
-            case 401 -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.getMessage());
-            case 400 -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
-            case 500 -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(response.getMessage() != null ? response.getMessage() : "Unexpected error during login.");
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error during login.");
-        };
+        return response.toResponseEntity();
     }
 
     @Operation(
@@ -93,11 +70,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(@RequestBody @Valid TokenDTO token) {
         var response = userService.logoutUser(token);
-        return switch (response.getStatusCode()) {
-            case 200 -> ResponseEntity.ok(response.getMessage());
-            case 400 -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error during logout.");
-        };
+        return response.toResponseEntity();
     }
 
 }

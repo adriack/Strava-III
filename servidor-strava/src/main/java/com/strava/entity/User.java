@@ -67,6 +67,10 @@ public class User {
     )
     private List<Challenge> challenges = new ArrayList<>();
 
+    // Relación Uno a Varios con Challenge (retos creados por el usuario)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Challenge> createdChallenges = new ArrayList<>();
+
     // Relación Uno a Varios con UserToken
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserToken> tokens = new ArrayList<>();
@@ -145,6 +149,24 @@ public class User {
     public void removeChallenge(Challenge challenge) {
         if (challenge != null && challenges.contains(challenge)) {
             challenges.remove(challenge);
+        }
+    }
+
+    // Métodos de conveniencia para retos creados
+    public List<Challenge> getCreatedChallenges() { return createdChallenges; }
+    public void setCreatedChallenges(List<Challenge> createdChallenges) { this.createdChallenges = createdChallenges; }
+
+    public void addCreatedChallenge(Challenge challenge) {
+        if (challenge != null && !createdChallenges.contains(challenge)) {
+            createdChallenges.add(challenge);
+            challenge.setCreator(this);
+        }
+    }
+
+    public void removeCreatedChallenge(Challenge challenge) {
+        if (challenge != null && createdChallenges.contains(challenge)) {
+            createdChallenges.remove(challenge);
+            challenge.setCreator(null);
         }
     }
 

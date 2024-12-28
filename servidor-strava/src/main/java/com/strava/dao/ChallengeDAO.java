@@ -1,6 +1,7 @@
 package com.strava.dao;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.strava.entity.Challenge;
+import com.strava.entity.User;
 import com.strava.entity.enumeration.SportType;
 
 @Repository
@@ -22,5 +24,5 @@ public interface ChallengeDAO extends JpaRepository<Challenge, UUID> {
     "ORDER BY c.startDate DESC")
     Page<Challenge> findFilteredChallenges(UUID userId, LocalDate startDate, LocalDate endDate, SportType sport, Pageable pageable);
 
-
+    List<Challenge> findByCreator(User creator);
 }

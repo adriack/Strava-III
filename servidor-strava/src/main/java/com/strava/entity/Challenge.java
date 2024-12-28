@@ -16,7 +16,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -49,6 +51,11 @@ public class Challenge {
 
     @ManyToMany(mappedBy = "challenges")  // Relación bidireccional con User
     private List<User> users = new ArrayList<>();  // Listado de usuarios que participan en el reto
+
+    // Relación Muchos a Uno con User (usuario que ha creado el reto)
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
 
     // Constructor vacío para JPA
     public Challenge() {}
@@ -86,7 +93,6 @@ public class Challenge {
     public void setSport(SportType sport) { this.sport = sport; }
 
     // Métodos para los usuarios
-
     public List<User> getUsers() { return new ArrayList<>(users); }
     public void setUsers(List<User> users) { this.users = users; }
 
@@ -103,5 +109,9 @@ public class Challenge {
             user.removeChallenge(this);  // Aseguramos que la relación sea eliminada en el otro lado también
         }
     }
+
+    // Métodos para el creador del reto
+    public User getCreator() { return creator; }
+    public void setCreator(User creator) { this.creator = creator; }
 
 }
