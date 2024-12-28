@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mi Perfil</title>
+</head>
+<body>
+    <h1>Información del Usuario</h1>
+    <p>Nombre: <span th:text="${user.name}"></span></p>
+    <p>Email: <span th:text="${user.email}"></span></p>
+
+    <h2>Sesiones de Entrenamiento</h2>
+    <ul>
+        <li th:each="session : ${user.sessions}">
+            <span th:text="${session.name}"></span> - <span th:text="${session.date}"></span>
+        </li>
+    </ul>
+
+    <h2>Retos Aceptados</h2>
+    <ul>
+        <li th:each="challenge : ${user.acceptedChallenges}">
+            <span th:text="${challenge.name}"></span> - <span th:text="${challenge.status}"></span>
+        </li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Descubrir Retos</title>
+</head>
+<body>
+    <h1>Descubrir Retos</h1>
+    <form th:action="@{/discover}" method="get">
+        <label for="startDate">Fecha de inicio:</label>
+        <input type="date" id="startDate" name="startDate">
+        <br>
+        <label for="endDate">Fecha de fin:</label>
+        <input type="date" id="endDate" name="endDate">
+        <br>
+        <button type="submit">Filtrar</button>
+    </form>
+    <ul>
+        <li th:each="challenge : ${challenges}">
+            <span th:text="${challenge.name}"></span> - <span th:text="${challenge.startDate}"></span> a <span th:text="${challenge.endDate}"></span>
+        </li>
+    </ul>
+</body>
+</html>
