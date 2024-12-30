@@ -1,99 +1,104 @@
 package com.strava.dto;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.strava.entity.User;
 import com.strava.entity.enumeration.AuthProvider;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Positive;
-
-@Schema(description = "DTO for user registration and data.")
 public class UserDTO {
-
-    @NotBlank(message = "Email is required.")
-    @Email(message = "Invalid email format.")
-    @Schema(description = "User's email address.", example = "user@example.com")
+    private UUID id;
     private String email;
-
-    @NotBlank(message = "Password is required.")
-    @Schema(description = "User's password.", example = "SecurePassword123!")
-    private String password;
-
-    @NotBlank(message = "Name is required.")
-    @Schema(description = "User's full name.", example = "John Doe")
     private String name;
-
-    @NotNull(message = "Date of Birth is required.")
-    @Past(message = "Date of Birth must be in the past.")
-    @Schema(description = "User's date of birth.", example = "1990-01-15")
     private LocalDate dateOfBirth;
-
-    @Positive(message = "Weight must be greater than zero.")
-    @Schema(description = "User's weight in kilograms.", example = "70.5")
     private Double weight;
-
-    @Positive(message = "Height must be greater than zero.")
-    @Schema(description = "User's height in meters.", example = "1.75")
     private Double height;
-
-    @Positive(message = "MaxHeartRate must be greater than zero.")
-    @Schema(description = "User's maximum heart rate.", example = "190")
     private Integer maxHeartRate;
-
-    @Positive(message = "RestingHeartRate must be greater than zero.")
-    @Schema(description = "User's resting heart rate.", example = "60")
     private Integer restingHeartRate;
-
-    @NotNull(message = "AuthProvider is required.")
-    @Schema(description = "Authentication provider used by the user.", example = "GOOGLE")
     private AuthProvider authProvider;
 
-    @JsonCreator
-    public UserDTO(
-            @JsonProperty("email") String email,
-            @JsonProperty("name") String name,
-            @JsonProperty("dateOfBirth") LocalDate dateOfBirth,
-            @JsonProperty("authProvider") AuthProvider authProvider,
-            @JsonProperty("password") String password) {
-
-        this.email = email;
-        this.name = name;
-        this.dateOfBirth = dateOfBirth;
-        this.authProvider = authProvider;
-        this.password = password;
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.dateOfBirth = user.getDateOfBirth();
+        this.weight = user.getWeight();
+        this.height = user.getHeight();
+        this.maxHeartRate = user.getMaxHeartRate();
+        this.restingHeartRate = user.getRestingHeartRate();
+        this.authProvider = user.getAuthProvider();
     }
 
     // Getters y Setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public LocalDate getDateOfBirth() { return dateOfBirth; }
-    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+    public String getEmail() {
+        return email;
+    }
 
-    public Double getWeight() { return weight; }
-    public void setWeight(Double weight) { this.weight = weight; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public Double getHeight() { return height; }
-    public void setHeight(Double height) { this.height = height; }
+    public String getName() {
+        return name;
+    }
 
-    public Integer getMaxHeartRate() { return maxHeartRate; }
-    public void setMaxHeartRate(Integer maxHeartRate) { this.maxHeartRate = maxHeartRate; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public Integer getRestingHeartRate() { return restingHeartRate; }
-    public void setRestingHeartRate(Integer restingHeartRate) { this.restingHeartRate = restingHeartRate; }
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
-    public AuthProvider getAuthProvider() { return authProvider; }
-    public void setAuthProvider(AuthProvider authProvider) { this.authProvider = authProvider; }
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public Double getHeight() {
+        return height;
+    }
+
+    public void setHeight(Double height) {
+        this.height = height;
+    }
+
+    public Integer getMaxHeartRate() {
+        return maxHeartRate;
+    }
+
+    public void setMaxHeartRate(Integer maxHeartRate) {
+        this.maxHeartRate = maxHeartRate;
+    }
+
+    public Integer getRestingHeartRate() {
+        return restingHeartRate;
+    }
+
+    public void setRestingHeartRate(Integer restingHeartRate) {
+        this.restingHeartRate = restingHeartRate;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
+    }
 }

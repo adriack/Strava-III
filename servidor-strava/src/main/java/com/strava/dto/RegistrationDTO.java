@@ -1,10 +1,10 @@
-package com.cliente.dto;
+package com.strava.dto;
 
 import java.time.LocalDate;
 
-import com.cliente.entity.enumeration.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.strava.entity.enumeration.AuthProvider;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "DTO for user registration and data.")
-public class UserDTO {
+public class RegistrationDTO {
 
     @NotBlank(message = "Email is required.")
     @Email(message = "Invalid email format.")
@@ -55,7 +55,7 @@ public class UserDTO {
     private AuthProvider authProvider;
 
     @JsonCreator
-    public UserDTO(
+    public RegistrationDTO(
             @JsonProperty("email") String email,
             @JsonProperty("name") String name,
             @JsonProperty("dateOfBirth") LocalDate dateOfBirth,
@@ -75,10 +75,6 @@ public class UserDTO {
         this.height = height;
         this.maxHeartRate = maxHeartRate;
         this.restingHeartRate = restingHeartRate;
-    }
-
-    // Constructor vacío
-    public UserDTO() {
     }
 
     // Getters y Setters

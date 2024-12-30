@@ -8,6 +8,7 @@ import com.strava.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Positive;
 
 @Schema(description = "Filter criteria for searching challenges.")
 public class FilterDTO {
@@ -22,6 +23,7 @@ public class FilterDTO {
     private SportType sport = null;
 
     @Schema(description = "Maximum number of challenges to retrieve.", example = "10")
+    @Positive(message = "Limit must be a positive number.")
     private Integer limit = null;
 
     @JsonCreator

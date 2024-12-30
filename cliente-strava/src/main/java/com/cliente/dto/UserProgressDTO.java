@@ -1,4 +1,4 @@
-package com.strava.dto;
+package com.cliente.dto;
 
 public class UserProgressDTO {
     private String userName;

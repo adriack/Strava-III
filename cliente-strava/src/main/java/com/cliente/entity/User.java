@@ -1,12 +1,12 @@
-package com.strava.entity;
+package com.cliente.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.strava.dto.RegistrationDTO;
-import com.strava.entity.enumeration.AuthProvider;
+import com.cliente.dto.UserDTO;
+import com.cliente.entity.enumeration.AuthProvider;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -79,7 +79,7 @@ public class User {
         // Constructor vacío requerido por JPA
     }
 
-    public User(RegistrationDTO userDTO) {
+    public User(UserDTO userDTO) {
         this.email = userDTO.getEmail();
         this.name = userDTO.getName();
         this.dateOfBirth = userDTO.getDateOfBirth();

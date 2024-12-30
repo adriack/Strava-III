@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import com.strava.dao.TokenDAO;
 import com.strava.dao.UserDAO;
 import com.strava.dto.LoginDTO;
+import com.strava.dto.RegistrationDTO;
 import com.strava.dto.ResponseWrapper;
 import com.strava.dto.TokenDTO;
 import com.strava.dto.UserDTO;
+import com.strava.dto.UserPhysicalInfoDTO;
 import com.strava.entity.User;
 import com.strava.entity.UserToken;
 import com.strava.external.AuthGateway;
@@ -27,45 +29,48 @@ public class UserService {
     private TokenDAO tokenDAO;
 
     private final FactoriaGateway factoriaGateway;
+    private final TokenService tokenService;
 
-    public UserService() {
+    @Autowired
+    public UserService(TokenService tokenService) {
         this.factoriaGateway = new FactoriaGateway();
+        this.tokenService = tokenService;
     }
 
     // Registrar un nuevo usuario
-    public ResponseWrapper<String> registerUser(UserDTO userDTO) {
+    public ResponseWrapper registerUser(RegistrationDTO userDTO) {
         if (userDAO.findByEmail(userDTO.getEmail()).isPresent()) {
-            return new ResponseWrapper<>(400, "This email already exists.", null);
+            return new ResponseWrapper(409, "error", "This email is already registered.");
         }
 
         AuthGateway authGateway = factoriaGateway.createGateway(userDTO.getAuthProvider());
 
         Optional<Boolean> emailValidOptional = authGateway.validateEmail(userDTO.getEmail());
         if (emailValidOptional.isEmpty()) {
-            return new ResponseWrapper<>(500, "Error communicating with authentication provider for email validation.", null);
+            return new ResponseWrapper(500, "error", "Error communicating with authentication provider for email validation.");
         }
         boolean emailValid = emailValidOptional.get();
         if (!emailValid) {
-            return new ResponseWrapper<>(400, "Email is not registered with the specified provider.", null);
+            return new ResponseWrapper(404, "error", "Email is not registered with the specified provider.");
         }
 
         Optional<Boolean> passwordValidOptional = authGateway.validatePassword(userDTO.getEmail(), userDTO.getPassword());
         if (passwordValidOptional.isEmpty()) {
-            return new ResponseWrapper<>(500, "Error communicating with authentication provider for password validation.", null);
+            return new ResponseWrapper(500, "error", "Error communicating with authentication provider for password validation.");
         }
         boolean passwordValid = passwordValidOptional.get();
         if (!passwordValid) {
-            return new ResponseWrapper<>(401, "Invalid credentials.", null);
+            return new ResponseWrapper(401, "error", "Invalid credentials.");
         }
 
         User user = new User(userDTO);
         userDAO.save(user);
 
-        return new ResponseWrapper<>(201, "User registered successfully.", "User ID: " + user.getId());
+        return new ResponseWrapper(201, "user-id", user.getId());
     }
 
     // Iniciar sesión de usuario
-    public ResponseWrapper<String> loginUser(LoginDTO loginDTO) {
+    public ResponseWrapper loginUser(LoginDTO loginDTO) {
         String email = loginDTO.getEmail();
         String password = loginDTO.getPassword();
 
@@ -73,7 +78,7 @@ public class UserService {
         Optional<User> optionalUser = userDAO.findByEmail(email);
 
         if (optionalUser.isEmpty()) {
-            return new ResponseWrapper<>(400, "User must be registered first.", null);
+            return new ResponseWrapper(400, "error", "User must be registered first.");
         }
 
         User user = optionalUser.get();
@@ -83,55 +88,73 @@ public class UserService {
 
         Optional<Boolean> credentialsValidOptional = authGateway.validatePassword(email, password);
         if (credentialsValidOptional.isEmpty()) {
-            return new ResponseWrapper<>(500, "Error communicating with authentication provider for password validation.", null);
+            return new ResponseWrapper(500, "error", "Error communicating with authentication provider for password validation.");
         }
         boolean credentialsValid = credentialsValidOptional.get();
         if (!credentialsValid) {
-            return new ResponseWrapper<>(401, "Invalid credentials.", null);
+            return new ResponseWrapper(401, "error", "Invalid credentials.");
         }
 
         // Genera un token de usuario y lo almacena en la base de datos
-        String token = generateToken();
+        String token = tokenService.generateToken();
         UserToken userToken = new UserToken(user, token);
         tokenDAO.save(userToken);
 
-        return new ResponseWrapper<>(200, "Login successful.", "Token: " + token);
+        return new ResponseWrapper(200, "token", token);
     }
 
     // Cerrar sesión de usuario
-    public ResponseWrapper<String> logoutUser(TokenDTO tokenDTO) {
+    public ResponseWrapper logoutUser(TokenDTO tokenDTO) {
         String token = tokenDTO.getToken();
         Optional<UserToken> optionalToken = tokenDAO.findByToken(token);
 
         if (optionalToken.isEmpty()) {
-            return new ResponseWrapper<>(400, "Invalid token.", null);
+            return new ResponseWrapper(400, "error", "Invalid token.");
         }
 
         UserToken userToken = optionalToken.get();
         userToken.setRevoked(true);
         tokenDAO.save(userToken);
 
-        return new ResponseWrapper<>(200, "User logged out successfully.", null);
+        return new ResponseWrapper(200, "message", "User logged out successfully.");
     }
 
-    // Validar el token y obtener el usuario asociado
-    public User getUserFromToken(TokenDTO tokenDTO) {
-        String token = tokenDTO.getToken();
-    
-        Optional<User> user = tokenDAO.findUserByToken(token);
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("Invalid or revoked token.");
-        }
-    
-        return user.get();
+    // Método para obtener información del usuario basado en un token
+    public ResponseWrapper getUserInfoFromToken(TokenDTO tokenDTO) {
+        User user = tokenService.getUserFromToken(tokenDTO);
+        UserDTO userInfo = new UserDTO(user);
+        return new ResponseWrapper(200, "UserInfo", userInfo);
     }
-    
+
+    // Método para actualizar la información física del usuario
+    public ResponseWrapper updateUserPhysicalInfo(TokenDTO tokenDTO, UserPhysicalInfoDTO userPhysicalInfoDTO) {
+        User user = tokenService.getUserFromToken(tokenDTO);
+
+        if (userPhysicalInfoDTO.getName() != null) {
+            user.setName(userPhysicalInfoDTO.getName());
+        }
+        if (userPhysicalInfoDTO.getDateOfBirth() != null) {
+            user.setDateOfBirth(userPhysicalInfoDTO.getDateOfBirth());
+        }
+        if (userPhysicalInfoDTO.getWeight() != null) {
+            user.setWeight(userPhysicalInfoDTO.getWeight());
+        }
+        if (userPhysicalInfoDTO.getHeight() != null) {
+            user.setHeight(userPhysicalInfoDTO.getHeight());
+        }
+        if (userPhysicalInfoDTO.getMaxHeartRate() != null) {
+            user.setMaxHeartRate(userPhysicalInfoDTO.getMaxHeartRate());
+        }
+        if (userPhysicalInfoDTO.getRestingHeartRate() != null) {
+            user.setRestingHeartRate(userPhysicalInfoDTO.getRestingHeartRate());
+        }
+
+        userDAO.save(user);
+        return new ResponseWrapper(200, "message", "User info updated successfully.");
+    }
+
     public User getUserById(UUID userId) {
         return userDAO.findById(userId).orElse(null);
     }
 
-    // Método para generar un token único basado en el timestamp actual
-    private String generateToken() {
-        return String.valueOf(System.currentTimeMillis());
-    }
 }

@@ -1,7 +1,9 @@
 package com.strava.service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,22 +30,19 @@ public class ChallengeService {
     private final UserService userService;
     private final ChallengeDAO challengeDAO;
     private final TrainingSessionDAO trainingSessionDAO;
+    private final TokenService tokenService;
 
-    public ChallengeService(UserService userService, ChallengeDAO challengeDAO, TrainingSessionDAO trainingSessionDAO) {
+    public ChallengeService(UserService userService, ChallengeDAO challengeDAO, TrainingSessionDAO trainingSessionDAO, TokenService tokenService) {
         this.userService = userService;
         this.challengeDAO = challengeDAO;
         this.trainingSessionDAO = trainingSessionDAO;
+        this.tokenService = tokenService;
     }
 
     // Crear un reto y almacenarlo en la base de datos
-    public ResponseWrapper<String> createChallenge(TokenDTO tokenDTO, ChallengeDTO challengeDTO) {
+    public ResponseWrapper createChallenge(TokenDTO tokenDTO, ChallengeDTO challengeDTO) {
         // Validar token y obtener el usuario
-        User user;
-        try {
-            user = userService.getUserFromToken(tokenDTO);
-        } catch (IllegalArgumentException e) {
-            return new ResponseWrapper<>(401, "Invalid token", null);
-        }
+        User user = tokenService.getUserFromToken(tokenDTO);
 
         // Crear un nuevo objeto Challenge a partir del DTO
         Challenge challenge = new Challenge(challengeDTO);
@@ -53,10 +52,10 @@ public class ChallengeService {
         // Guardar el reto en la base de datos
         challengeDAO.save(challenge);
 
-        return new ResponseWrapper<>(200, "Challenge created successfully.", "ID: " + challenge.getId());
+        return new ResponseWrapper(200, "challenge-id", challenge.getId());
     }
 
-    public ResponseWrapper<List<ChallengeDTO>> getActiveChallenges(FilterDTO challengeFilterDTO) {
+    public ResponseWrapper getActiveChallenges(FilterDTO challengeFilterDTO) {
         LocalDate startDate = challengeFilterDTO.getStartDate();
         LocalDate endDate = challengeFilterDTO.getEndDate();
         SportType sport = challengeFilterDTO.getSport();
@@ -78,35 +77,33 @@ public class ChallengeService {
                 .map(challenge -> new ChallengeDTO(challenge))
                 .collect(Collectors.toList());
 
-        return new ResponseWrapper<>(200, "Active challenges retrieved successfully.", challenges);
+        return new ResponseWrapper(200, "challenges", challenges);
     }    
 
     // Aceptar un reto y asociarlo al usuario
-    public ResponseWrapper<String> acceptChallenge(TokenDTO tokenDTO, UUID challengeId) {
+    public ResponseWrapper acceptChallenge(TokenDTO tokenDTO, UUID challengeId) {
         // Validar token y obtener el usuario
-        User user;
-        try {
-            user = userService.getUserFromToken(tokenDTO);
-        } catch (IllegalArgumentException e) {
-            return new ResponseWrapper<>(401, "Invalid token", null);
-        }
+        User user = tokenService.getUserFromToken(tokenDTO);
 
         // Buscar el reto
         Challenge challenge = challengeDAO.findById(challengeId)
             .orElse(null);
 
         if (challenge == null) {
-            return new ResponseWrapper<>(404, "Challenge not found.", null);
+            return new ResponseWrapper(404, "error", "Challenge not found.");
         }
 
         // Verificar si el reto ya ha terminado
         if (challenge.getEndDate().isBefore(LocalDate.now())) {
-            return new ResponseWrapper<>(400, "Challenge has already ended.", null);
+            Map<String, String> errorDetails = new HashMap<>();
+            errorDetails.put("ended", "The challenge has already ended.");
+            
+            return new ResponseWrapper(400, "errors", errorDetails);
         }
 
         // Verificar si el usuario ya ha aceptado el reto
         if (challenge.getUsers().contains(user)) {
-            return new ResponseWrapper<>(400, "Challenge already accepted.", null);
+            return new ResponseWrapper(409, "error", "Challenge already accepted.");
         }
 
         // Asociación del reto y el usuario
@@ -115,17 +112,12 @@ public class ChallengeService {
         // Guardar los cambios en la base de datos
         challengeDAO.save(challenge);
 
-        return new ResponseWrapper<>(200, "Challenge accepted.", null);
+        return new ResponseWrapper(200, "message", "Challenge accepted.");
     }
 
-    public ResponseWrapper<List<ChallengeDTO>> getAcceptedChallenges(TokenDTO tokenDTO, boolean includeProgress) {
+    public ResponseWrapper getAcceptedChallenges(TokenDTO tokenDTO, boolean includeProgress) {
         // Validar token y obtener el usuario
-        User user;
-        try {
-            user = userService.getUserFromToken(tokenDTO);
-        } catch (IllegalArgumentException e) {
-            return new ResponseWrapper<>(401, "Invalid token", null);
-        }
+        User user = tokenService.getUserFromToken(tokenDTO);
 
         // Consultar los retos aceptados desde la base de datos
         Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);  // Recuperamos todos los retos sin paginación
@@ -145,34 +137,34 @@ public class ChallengeService {
                 })
                 .collect(Collectors.toList());
 
-        return new ResponseWrapper<>(200, "Accepted challenges retrieved successfully.", challenges);
+        return new ResponseWrapper(200, "challenges", challenges);
     }
 
-    public ResponseWrapper<List<UserProgressDTO>> getChallengeParticipants(UUID challengeId) {
+    public ResponseWrapper getChallengeParticipants(UUID challengeId) {
         // Buscar el reto
         Challenge challenge = challengeDAO.findById(challengeId)
             .orElse(null);
 
         if (challenge == null) {
-            return new ResponseWrapper<>(404, "Challenge not found.", null);
+            return new ResponseWrapper(404, "error", "Challenge not found.");
         }
 
         // Obtener los usuarios participantes y sus progresos
         List<UserProgressDTO> userProgressList = challenge.getUsers().stream()
             .map(user -> {
                 double progress = calculateProgress(user, challenge);
-                return new UserProgressDTO(user.getName(), progress);
+                return new UserProgressDTO(user.getId(), user.getName(), progress);
             })
             .collect(Collectors.toList());
 
-        return new ResponseWrapper<>(200, "Participants with progress retrieved successfully.", userProgressList);
+        return new ResponseWrapper(200, "participants", userProgressList);
     }
 
-    public ResponseWrapper<List<ChallengeDTO>> getCreatedChallenges(UUID userId) {
+    public ResponseWrapper getCreatedChallenges(UUID userId) {
         // Obtener el usuario desde el UserService
         User user = userService.getUserById(userId);
         if (user == null) {
-            return new ResponseWrapper<>(404, "User not found.", null);
+            return new ResponseWrapper(404, "error", "User not found.");
         }
 
         // Consultar los retos creados por el usuario desde la base de datos
@@ -183,7 +175,7 @@ public class ChallengeService {
                 .map(ChallengeDTO::new)
                 .collect(Collectors.toList());
 
-        return new ResponseWrapper<>(200, "Created challenges retrieved successfully.", challengeDTOs);
+        return new ResponseWrapper(200, "challenges", challengeDTOs);
     }
 
     private double calculateProgress(User user, Challenge challenge) {

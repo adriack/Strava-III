@@ -1,17 +1,29 @@
 package com.strava.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class ResponseWrapper<T> {
-    private int statusCode; // Código HTTP
-    private String message; // Mensaje descriptivo (opcional)
-    private T data;         // Datos devueltos por el servicio
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-    public ResponseWrapper(int statusCode, String message, T data) {
+@JsonInclude(JsonInclude.Include.NON_NULL) // Excluye campos nulos en la respuesta JSON
+public class ResponseWrapper {
+    private int statusCode; // Código HTTP
+    private Map<String, Object> data; // Datos devueltos por el servicio, siempre como un Map
+
+    // Constructor principal
+    public ResponseWrapper(int statusCode, Map<String, Object> data) {
         this.statusCode = statusCode;
-        this.message = message;
         this.data = data;
+    }
+
+    // Constructor alternativo
+    public ResponseWrapper(int statusCode, String key, Object value) {
+        this.statusCode = statusCode;
+        this.data = new HashMap<>();
+        this.data.put(key, value);
     }
 
     // Getters
@@ -19,11 +31,7 @@ public class ResponseWrapper<T> {
         return statusCode;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public T getData() {
+    public Map<String, Object> getData() {
         return data;
     }
 
@@ -32,11 +40,7 @@ public class ResponseWrapper<T> {
         this.statusCode = statusCode;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setData(T data) {
+    public void setData(Map<String, Object> data) {
         this.data = data;
     }
 
@@ -46,14 +50,9 @@ public class ResponseWrapper<T> {
         if (httpStatus == null) {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR; // Estado predeterminado
         }
-    
-        // Verificar si hay datos; si no, usa el mensaje como contenido de la respuesta
-        String responseMessage = this.message != null ? this.message : "No content available";
-    
-        // Si hay datos, los añade junto con el mensaje
-        Object responseData = this.data != null ? this.data : responseMessage;
-    
-        // Retorna la ResponseEntity con los datos y el mensaje
-        return ResponseEntity.status(httpStatus).body(responseData);
+
+        // Retorna la ResponseEntity con los datos serializados como JSON
+        return ResponseEntity.status(httpStatus).body(this.getData());
     }
+
 }

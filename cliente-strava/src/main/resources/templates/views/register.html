@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register User</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header>
+        <h1>Register a New User</h1>
+    </header>
+    <main>
+        <!-- Formulario para el registro de usuario -->
+        <form th:action="@{/users/register}" method="post">
+            <section>
+                <h2>Credentials</h2>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                <label for="authProvider">Auth Provider:</label>
+                <select id="authProvider" name="authProvider" required>
+                    <option value="GOOGLE">Google</option>
+                    <option value="META">Meta</option>
+                </select>
+            </section>
+
+            <section>
+                <h2>Personal Information</h2>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+                <label for="dateOfBirth">Date of Birth:</label>
+                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+
+                <label for="weight">Weight:</label>
+                <input type="number" step="0.1" id="weight" name="weight" placeholder="Enter your weight">
+
+                <label for="height">Height:</label>
+                <input type="number" step="0.01" id="height" name="height" placeholder="Enter your height">
+
+                <label for="maxHeartRate">Max Heart Rate:</label>
+                <input type="number" id="maxHeartRate" name="maxHeartRate" placeholder="Enter your max heart rate">
+
+                <label for="restingHeartRate">Resting Heart Rate:</label>
+                <input type="number" id="restingHeartRate" name="restingHeartRate" placeholder="Enter your resting heart rate">
+            </section>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- Mostrar mensaje de éxito o error -->
+        <div th:if="${response != null}">
+            <p th:text="${response.message}"></p>
+        </div>
+        <div th:if="${error != null}">
+            <p th:text="${error}"></p>
+        </div>
+    </main>
+</body>
+</html>
