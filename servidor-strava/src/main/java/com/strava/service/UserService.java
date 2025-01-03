@@ -60,7 +60,7 @@ public class UserService {
         }
         boolean passwordValid = passwordValidOptional.get();
         if (!passwordValid) {
-            return new ResponseWrapper(401, "error", "Invalid credentials.");
+            return new ResponseWrapper(401, "error", "Invalid credentials");
         }
 
         User user = new User(userDTO);

@@ -44,12 +44,12 @@ public class TrainingSessionController {
     @Operation(summary = "Create a new training session", description = "Creates a new training session for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Session created successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"session-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"session-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
-                @ExampleObject(value = "{\"errors\": {\"distance\": \"Distance must be greater than zero.\"}}"),
+                @ExampleObject(value = "{\n  \"errors\": {\n    \"distance\": \"Distance must be greater than zero.\"\n  }\n}")
             }))
     })
     @PostMapping
@@ -63,13 +63,12 @@ public class TrainingSessionController {
     @Operation(summary = "Get user training sessions", description = "Fetches training sessions for a user with optional date range and limit.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Sessions retrieved successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"sessions\": [{\"id\": \"f8ebbff6-c133-476e-86b5-ed0af7056c0d\", \"title\": \"Morning Run\", \"sport\": \"RUNNING\", \"distance\": 5, \"startDate\": \"2024-12-11\", \"startTime\": \"06:30\", \"duration\": 30}, {\"id\": \"f8ebbff6-c133-476e-86b5-ed0af7056c0e\", \"title\": \"Evening Walk\", \"sport\": \"CICLISMO\", \"distance\": 3, \"startDate\": \"2024-12-11\", \"startTime\": \"18:00\", \"duration\": 45}]}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"sessions\": [\n    {\n      \"id\": \"f8ebbff6-c133-476e-86b5-ed0af7056c0d\",\n      \"title\": \"Morning Run\",\n      \"sport\": \"RUNNING\",\n      \"distance\": 5,\n      \"startDate\": \"2024-12-11\",\n      \"startTime\": \"06:30\",\n      \"duration\": 30\n    },\n    {\n      \"id\": \"f8ebbff6-c133-476e-86b5-ed0af7056c0e\",\n      \"title\": \"Evening Walk\",\n      \"sport\": \"CICLISMO\",\n      \"distance\": 3,\n      \"startDate\": \"2024-12-11\",\n      \"startTime\": \"18:00\",\n      \"duration\": 45\n    }\n  ]\n}"))),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
-                @ExampleObject(value = "{\"error\": \"Invalid date format or request.\"}"),
+                @ExampleObject(value = "{\n  \"error\": \"Invalid date format or request.\"\n}")
             }))
     })
     @GetMapping
@@ -84,11 +83,11 @@ public class TrainingSessionController {
     @Operation(summary = "Delete a training session", description = "Deletes an existing training session for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Session deleted successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Training session deleted successfully.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"message\": \"Training session deleted successfully.\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "404", description = "Not Found - Session not found or does not belong to the user",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Training session not found or does not belong to the user.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Training session not found or does not belong to the user.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}")))
     })
@@ -104,11 +103,11 @@ public class TrainingSessionController {
     @Operation(summary = "Update an existing training session", description = "Updates an existing training session for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Session updated successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Training session updated successfully.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"message\": \"Training session updated successfully.\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "404", description = "Not Found - Session not found or does not belong to the user",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Training session not found or does not belong to the user.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Training session not found or does not belong to the user.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}")))
     })

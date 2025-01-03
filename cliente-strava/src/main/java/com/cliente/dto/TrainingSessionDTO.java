@@ -4,11 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import com.cliente.entity.enumeration.SportType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.cliente.entity.TrainingSession;
-import com.cliente.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -22,31 +21,31 @@ public class TrainingSessionDTO {
     @Schema(description = "ID of the training session.", example = "550e8400-e29b-41d4-a716-446655440000", nullable = true, hidden = true)
     private UUID id;
 
-    @NotBlank(message = "Title is required.", groups = PostValidation.class)
+    @NotBlank(message = "Title is required.")
     @Schema(description = "Title of the training session.", example = "Morning Run")
     private String title;
 
-    @NotNull(message = "Sport is required.", groups = PostValidation.class)
+    @NotNull(message = "Sport is required.")
     @Schema(description = "Type of sport for the session.", example = "RUNNING")
     private SportType sport;
 
-    @NotNull(message = "Distance is required.", groups = PostValidation.class)
+    @NotNull(message = "Distance is required.")
     @Positive(message = "Distance must be greater than zero.")
     @Schema(description = "Distance covered during the session in kilometers.", example = "5.0")
     private Double distance;
 
-    @NotNull(message = "Start date is required.", groups = PostValidation.class)
+    @NotNull(message = "Start date is required.")
     @PastOrPresent(message = "Start date cannot be in the future.")
     @Schema(description = "Date when the session started.", example = "2024-12-11")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @NotNull(message = "Start time is required.", groups = PostValidation.class)
+    @NotNull(message = "Start time is required.")
     @Schema(description = "Time when the session started.", example = "06:30")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
-    @NotNull(message = "Duration is required.", groups = PostValidation.class)
+    @NotNull(message = "Duration is required.")
     @Schema(description = "Duration of the session in minutes.", example = "30.0")
     private Double duration;
 
@@ -65,16 +64,6 @@ public class TrainingSessionDTO {
         this.startDate = startDate;
         this.startTime = startTime;
         this.duration = duration;
-    }
-
-    public TrainingSessionDTO(TrainingSession session) {
-        this.id = session.getId();
-        this.title = session.getTitle();
-        this.sport = session.getSport();
-        this.distance = session.getDistance();
-        this.startDate = session.getStartDate();
-        this.startTime = session.getStartTime();
-        this.duration = session.getDuration();
     }
 
     // Getters y Setters
@@ -99,6 +88,4 @@ public class TrainingSessionDTO {
     public Double getDuration() { return duration; }
     public void setDuration(Double duration) { this.duration = duration; }
 
-    // Grupo de validación para POST
-    public interface PostValidation {}
 }

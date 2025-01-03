@@ -3,12 +3,11 @@ package com.cliente.dto;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.cliente.entity.enumeration.ObjectiveType;
+import com.cliente.entity.enumeration.SportType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.cliente.entity.Challenge;
-import com.cliente.entity.enumeration.ObjectiveType;
-import com.cliente.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -70,19 +69,6 @@ public class ChallengeDTO {
         this.objectiveValue = objectiveValue;
         this.objectiveType = objectiveType;
         this.sport = sport;
-        swapDatesIfNecessary();
-    }
-
-    // Constructor que recibe un Challenge y genera un ChallengeDTO
-    public ChallengeDTO(Challenge challenge) {
-        this.id = challenge.getId();
-        this.name = challenge.getName();
-        this.startDate = challenge.getStartDate();
-        this.endDate = challenge.getEndDate();
-        this.objectiveValue = challenge.getObjectiveValue();
-        this.objectiveType = challenge.getObjectiveType();
-        this.sport = challenge.getSport();
-        this.creatorId = challenge.getCreator().getId();
         swapDatesIfNecessary();
     }
 

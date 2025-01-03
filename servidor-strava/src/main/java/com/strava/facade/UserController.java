@@ -42,17 +42,17 @@ public class UserController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "User registered successfully.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"user-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"user-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Validation error response.",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"password\": \"Password is required.\",\n    \"weight\": \"Weight must be greater than zero.\",\n    \"email\": \"Invalid email format.\"\n  }\n}"))),
         @ApiResponse(responseCode = "401", description = "Invalid credentials.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid credentials.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid credentials.\"\n}"))),
         @ApiResponse(responseCode = "404", description = "Email is not registered with the specified provider.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Email is not registered with the specified provider.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Email is not registered with the specified provider.\"\n}"))),
         @ApiResponse(responseCode = "409", description = "Email is already registered.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"This email is already registered.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"This email is already registered.\"\n}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected error during registration.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Error communicating with authentication provider for email validation.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Error communicating with authentication provider for email validation.\"\n}")))
     })
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid RegistrationDTO user) {
@@ -66,13 +66,13 @@ public class UserController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User logged in successfully.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"token\": \"1735388888499\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"token\": \"1735388888499\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Invalid credentials.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid credentials.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid credentials.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "User must be registered first.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"User must be registered first.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"User must be registered first.\"\n}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected error during login.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Unexpected error during login.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Unexpected error during login.\"\n}")))
     })
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginDTO login) {
@@ -86,13 +86,13 @@ public class UserController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User logged out successfully.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"User logged out successfully.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"message\": \"User logged out successfully.\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Invalid token.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Authorization header is missing.",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected error during logout.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Unexpected error during logout.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Unexpected error during logout.\"\n}")))
     })
     @PostMapping("/logout")
     @SecurityRequirement(name = "token")
@@ -108,14 +108,13 @@ public class UserController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User info retrieved successfully.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\", \"email\": \"user@example.com\", \"name\": \"John Doe\", \"dateOfBirth\": \"1990-01-01\", \"weight\": 75, \"height\": 175, \"maxHeartRate\": 190, \"restingHeartRate\": 60, \"authProvider\": \"GOOGLE\"}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\",\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"weight\": 75,\n  \"height\": 175,\n  \"maxHeartRate\": 190,\n  \"restingHeartRate\": 60,\n  \"authProvider\": \"GOOGLE\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Invalid token.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Authorization header is missing.",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected error during retrieval.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Unexpected error during retrieval.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Unexpected error during retrieval.\"\n}")))
     })
     @GetMapping("/info")
     @SecurityRequirement(name = "token")
@@ -131,13 +130,13 @@ public class UserController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User physical info updated successfully.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"User info updated successfully.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"message\": \"User info updated successfully.\"\n}"))),
         @ApiResponse(responseCode = "401", description = "Invalid token.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Authorization header is missing.",
             content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected error during update.",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Unexpected error during update.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Unexpected error during update.\"\n}")))
     })
     @PatchMapping("/info")
     @SecurityRequirement(name = "token")

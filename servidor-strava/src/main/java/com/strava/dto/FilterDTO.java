@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Positive;
 
-@Schema(description = "Filter criteria for searching challenges.")
+@Schema(description = "Filter criteria for searching challenges or training sessions.")
 public class FilterDTO {
 
     @Schema(description = "Start date for the filter. Challenges starting on or after this date will be included.", example = "2024-01-01")

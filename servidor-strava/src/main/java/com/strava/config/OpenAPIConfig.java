@@ -21,7 +21,9 @@ public class OpenAPIConfig {
                         .in(SecurityScheme.In.HEADER)
                         .name("Authorization")))
             .info(new Info()
-                .title("User API")
-                .version("1.0"));
+                .title("Strava API")
+                .version("1.0")
+                .description("Use this API to access user data, activities, metrics, and more, with token-based authentication. " +
+                "Ensure a valid token is provided in the 'Authorization' header to access protected resources."));
     }
 }

@@ -2,14 +2,15 @@ package com.cliente.dto;
 
 import java.time.LocalDate;
 
+import com.cliente.entity.enumeration.SportType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.cliente.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Positive;
 
-@Schema(description = "Filter criteria for searching challenges.")
+@Schema(description = "Filter criteria for searching challenges or training sessions.")
 public class FilterDTO {
 
     @Schema(description = "Start date for the filter. Challenges starting on or after this date will be included.", example = "2024-01-01")
@@ -22,6 +23,7 @@ public class FilterDTO {
     private SportType sport = null;
 
     @Schema(description = "Maximum number of challenges to retrieve.", example = "10")
+    @Positive(message = "Limit must be a positive number.")
     private Integer limit = null;
 
     @JsonCreator

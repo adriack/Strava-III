@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
 
 @Component
@@ -73,7 +72,7 @@ public class GoogleAuthGateway implements AuthGateway {
                 // Parse the response to check if credentials are valid
                 return Optional.of(responseBody.contains("\"valid\":true"));
             } else {
-                logger.warn("Failed to validate password for email {}. HTTP Status: {}", email, response.statusCode());
+                logger.info("Invalid password for email {}. HTTP Status: {}", email, response.statusCode());
                 return Optional.of(false);
             }
         } catch (IOException ex) {

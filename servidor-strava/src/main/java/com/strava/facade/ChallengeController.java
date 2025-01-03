@@ -43,13 +43,13 @@ public class ChallengeController {
     @Operation(summary = "Create a new challenge", description = "Creates a new challenge for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Challenge created successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"challenge-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"challenge-id\": \"a574c531-e1f7-491d-b052-3862b9b4f1a8\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
-                @ExampleObject(value = "{\n  \"errors\": {\n    \"startDate\": \"Start date cannot be in the future.\"}"),
+                @ExampleObject(value = "{\n  \"errors\": {\n    \"startDate\": \"Start date cannot be in the future.\"\n  }\n}")
             })),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}")))
     })
     @PostMapping
     @Transactional
@@ -63,14 +63,13 @@ public class ChallengeController {
     @Operation(summary = "Get challenges", description = "Fetches challenges based on filters like date and sport. Active challenges are retrieved by default")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Challenges retrieved successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"challenges\": [{\"id\": \"94d6a98a-6594-4c31-825b-de588f701a47\", \"name\": \"Marathon Training\", \"startDate\": \"2024-01-01\", \"endDate\": \"2024-01-31\", \"objectiveValue\": 42.2, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"}, {\"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\", \"name\": \"Half Marathon Challenge\", \"startDate\": \"2024-02-01\", \"endDate\": \"2024-02-15\", \"objectiveValue\": 21.1, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"}]}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"challenges\": [\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a47\",\n      \"name\": \"Marathon Training\",\n      \"startDate\": \"2024-01-01\",\n      \"endDate\": \"2024-01-31\",\n      \"objectiveValue\": 42.2,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"\n    },\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\",\n      \"name\": \"Half Marathon Challenge\",\n      \"startDate\": \"2024-02-01\",\n      \"endDate\": \"2024-02-15\",\n      \"objectiveValue\": 21.1,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"\n    }\n  ]\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
-                @ExampleObject(value = "{\n  \"errors\": {\n    \"limit\": \"Limit must be a positive number.\"}"),
+                @ExampleObject(value = "{\n  \"errors\": {\n    \"limit\": \"Limit must be a positive number.\"\n  }\n}")
             })),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}")))
     })
     @GetMapping
     public ResponseEntity<?> getActiveChallenges(@ModelAttribute @Valid FilterDTO filterDTO) {
@@ -81,17 +80,17 @@ public class ChallengeController {
     @Operation(summary = "Accept a challenge", description = "Accepts a challenge for a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Challenge accepted successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Challenge accepted.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"message\": \"Challenge accepted.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
                 @ExampleObject(value = "{\n  \"errors\": {\n    \"ended\": \"The challenge has already ended.\"\n  }\n}")
             })),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "404", description = "Not Found - Challenge not found",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Challenge not found.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Challenge not found.\"\n}"))),
         @ApiResponse(responseCode = "409", description = "Conflict - Challenge already accepted or has ended",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Challenge already accepted or has ended.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Challenge already accepted or has ended.\"\n}")))
     })
     @PostMapping("/{challengeId}/accept")
     @Transactional
@@ -105,10 +104,9 @@ public class ChallengeController {
     @Operation(summary = "Get accepted challenges", description = "Fetches challenges accepted by a user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Accepted challenges retrieved successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"challenges\": [{\"id\": \"94d6a98a-6594-4c31-825b-de588f701a41\", \"name\": \"Marathon Training\", \"startDate\": \"2024-01-01\", \"endDate\": \"2024-01-31\", \"objectiveValue\": 42.2, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\", \"progress\": 0}, {\"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\", \"name\": \"Half Marathon Challenge\", \"startDate\": \"2024-02-01\", \"endDate\": \"2024-02-15\", \"objectiveValue\": 21.1, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\", \"progress\": 10}]}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"challenges\": [\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a41\",\n      \"name\": \"Marathon Training\",\n      \"startDate\": \"2024-01-01\",\n      \"endDate\": \"2024-01-31\",\n      \"objectiveValue\": 42.2,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\",\n      \"progress\": 0\n    },\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\",\n      \"name\": \"Half Marathon Challenge\",\n      \"startDate\": \"2024-02-01\",\n      \"endDate\": \"2024-02-15\",\n      \"objectiveValue\": 21.1,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\",\n      \"progress\": 10\n    }\n  ]\n}"))),
         @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid token",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Invalid token.\"}"))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Invalid token.\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Bad Request",
             content = @Content(mediaType = "application/json", examples = {
                 @ExampleObject(value = "{\n  \"errors\": {\n    \"token\": \"Required request header 'Authorization' with user token is missing\"\n  }\n}")
@@ -125,10 +123,9 @@ public class ChallengeController {
     @Operation(summary = "Get challenges created by a user", description = "Fetches challenges created by a specific user from user ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Created challenges retrieved successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"challenges\": [{\"id\": \"94d6a98a-6594-4c31-825b-de588f701a42\", \"name\": \"Marathon Training\", \"startDate\": \"2024-01-01\", \"endDate\": \"2024-01-31\", \"objectiveValue\": 42.2, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"}, {\"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\", \"name\": \"Half Marathon Challenge\", \"startDate\": \"2024-02-01\", \"endDate\": \"2024-02-15\", \"objectiveValue\": 21.1, \"objectiveType\": \"DISTANCIA\", \"sport\": \"RUNNING\", \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"}]}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"challenges\": [\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a42\",\n      \"name\": \"Marathon Training\",\n      \"startDate\": \"2024-01-01\",\n      \"endDate\": \"2024-01-31\",\n      \"objectiveValue\": 42.2,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"\n    },\n    {\n      \"id\": \"94d6a98a-6594-4c31-825b-de588f701a48\",\n      \"name\": \"Half Marathon Challenge\",\n      \"startDate\": \"2024-02-01\",\n      \"endDate\": \"2024-02-15\",\n      \"objectiveValue\": 21.1,\n      \"objectiveType\": \"DISTANCIA\",\n      \"sport\": \"RUNNING\",\n      \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"\n    }\n  ]\n}"))),
         @ApiResponse(responseCode = "404", description = "Not Found - User not found",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"User not found.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"User not found.\"\n}")))
     })
     @GetMapping("/created")
     public ResponseEntity<?> getCreatedChallenges(@RequestParam UUID userId) {
@@ -139,10 +136,9 @@ public class ChallengeController {
     @Operation(summary = "Get challenge participants with progress", description = "Fetches participants of a challenge along with their progress.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Participants with progress retrieved successfully",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"participants\": [{\"userId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"userName\": \"John Doe\", \"progress\": 75.5}, {\"userId\": \"94d6a98a-6594-4c31-825b-de588f701a47\", \"userName\": \"Jane Smith\", \"progress\": 50.0}]}"
-            ))),
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"participants\": [\n    {\n      \"userId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"userName\": \"John Doe\",\n      \"progress\": 75.5\n    },\n    {\n      \"userId\": \"94d6a98a-6594-4c31-825b-de588f701a47\",\n      \"userName\": \"Jane Smith\",\n      \"progress\": 50.0\n    }\n  ]\n}"))),
         @ApiResponse(responseCode = "404", description = "Not Found - Challenge not found",
-            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\": \"Challenge not found.\"}")))
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Challenge not found.\"\n}")))
     })
     @GetMapping("/{challengeId}/participants")
     @Transactional
