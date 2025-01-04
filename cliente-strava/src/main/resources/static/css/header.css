@@ -1,0 +1,42 @@
+header {
+    background-color: white;
+    position: sticky;
+    top:0;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 60px;
+}
+
+    header nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        height: 100%;
+    }
+
+        header nav ul {
+            list-style-type: none;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
+            header nav li {
+                display: flex;
+                height: 100%;
+                align-items: center;
+                margin-right: 20px;
+            }
+
+                header nav a {
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                    text-decoration: none;
+                    color: black
+                }
+
+    header img {
+        height: 60px;
+        width: auto;
+    }

@@ -123,7 +123,7 @@ public class UserService {
     public ResponseWrapper getUserInfoFromToken(TokenDTO tokenDTO) {
         User user = tokenService.getUserFromToken(tokenDTO);
         UserDTO userInfo = new UserDTO(user);
-        return new ResponseWrapper(200, "UserInfo", userInfo);
+        return new ResponseWrapper(200, userInfo.toMap());
     }
 
     // Método para actualizar la información física del usuario

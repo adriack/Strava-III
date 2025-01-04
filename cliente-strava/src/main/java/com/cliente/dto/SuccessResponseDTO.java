@@ -16,5 +16,9 @@ public class SuccessResponseDTO {
     public void setData(Map<String, Object> data) {
         this.data = data;
     }
+
+    public Object getValue(String key) {
+        return data.get(key);
+    }
 }
 

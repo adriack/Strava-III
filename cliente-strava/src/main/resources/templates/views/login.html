@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+
+</head>
+<body>
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <main>
+        <h1> Iniciar sesión </h1>
+        <form th:action="@{/strava/login}" method="post" th:object="${loginDTO}">
+            <section>
+                <h2>Credenciales</h2>
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="ejemplo@gmail.com" required>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></div>
+        
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="********" required>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
+
+                <div th:if="${invalidCredentials == true}" class="error-card">
+                    <p>Correo electrónico o contraseña incorrectas.</p>
+                </div>
+                <div th:if="${notRegistered == true}" class="error-card">
+                    <p>Usuario no registrado. <a th:href="@{/strava/register}">Registrarse</a></p>
+                </div>
+            </section>
+        
+            <button type="submit" class="orange">Iniciar sesión</button>
+        </form>        
+        
+        <!-- Mostrar mensaje de error -->
+        <div th:if="${unexpectedError == true}" class="error-popup">
+            <div class="error-popup-content">
+                <p>Se ha producido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.</p>
+                <button class="orange" onclick="closeErrorPopup()">Aceptar</button>
+            </div>
+        </div>
+    </main>
+    <script>
+        function closeErrorPopup() {
+            document.querySelector('.error-popup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

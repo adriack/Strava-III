@@ -1,6 +1,8 @@
 package com.strava.dto;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.strava.entity.User;
@@ -100,5 +102,19 @@ public class UserDTO {
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", this.id);
+        map.put("email", this.email);
+        map.put("name", this.name);
+        map.put("dateOfBirth", this.dateOfBirth);
+        map.put("weight", this.weight);
+        map.put("height", this.height);
+        map.put("maxHeartRate", this.maxHeartRate);
+        map.put("restingHeartRate", this.restingHeartRate);
+        map.put("authProvider", this.authProvider);
+        return map;
     }
 }

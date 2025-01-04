@@ -1,5 +1,7 @@
 package com.cliente.controller;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -7,12 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cliente.dto.ClientErrorResponseDTO;
+import com.cliente.dto.FilterDTO;
+import com.cliente.dto.LoginDTO;
 import com.cliente.dto.RegistrationDTO;
 import com.cliente.dto.SuccessResponseDTO;
 import com.cliente.service.ServiceProxy;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -86,4 +92,85 @@ public class ClientController {
         
         return "views/register";
     }
+
+    @PostMapping("/login")
+    public String loginUser(@Valid @ModelAttribute("loginDTO") LoginDTO login, 
+                            BindingResult bindingResult, Model model, HttpSession session) {
+        model.addAttribute("unexpectedError", false);
+        model.addAttribute("invalidCredentials", false);
+        model.addAttribute("notRegistered", false);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("loginDTO", login);
+            return "views/login";
+        } else {
+            var response = serviceProxy.loginUser(login);
+
+            switch (response) {
+                case null -> {
+                    model.addAttribute("unexpectedError", true);
+                    return "views/login";
+                }
+                case SuccessResponseDTO successResponse -> {
+                    model.addAttribute("response", successResponse.getData());
+                    session.setAttribute("userToken", successResponse.getValue("token"));  // Guardar el token en la sesión
+                    return "redirect:/strava/my_activity";  // Redirigir al método GET que carga "my activity"
+                }
+                case ClientErrorResponseDTO errorResponse -> {
+                    var errors = errorResponse.getErrors();
+                    if (errors.containsKey("error")) {
+                        String errorMessage = errors.get("error");
+                        if (errorMessage.contains("credentials")) {
+                            model.addAttribute("invalidCredentials", true);
+                        } else if (errorMessage.contains("must be registered")) {
+                            model.addAttribute("notRegistered", true);
+                        } else {
+                            model.addAttribute("unexpectedError", true);
+                        }
+                    } else {
+                        model.addAttribute("unexpectedError", true);
+                    }
+                    return "views/login";
+                }
+                default -> {
+                    model.addAttribute("unexpectedError", true);
+                    return "views/login";
+                }
+            }
+        }
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm(Model model) {
+        model.addAttribute("loginDTO", new LoginDTO());
+        model.addAttribute("unexpectedError", false);
+        model.addAttribute("invalidCredentials", false);
+        model.addAttribute("notRegistered", false);
+        return "views/login";
+    }
+
+    @PostMapping("/deleteSession")
+    public String deleteSession(@RequestParam UUID sessionId, @RequestParam String token, Model model) {
+        var response = serviceProxy.deleteSession(token, sessionId);
+        if (response instanceof SuccessResponseDTO) {
+            model.addAttribute("response", ((SuccessResponseDTO) response).getData());
+        } else {
+            model.addAttribute("unexpectedError", true);
+        }
+        return "views/my_activity";
+    }
+
+    @GetMapping("/my_activity")
+    public String showMyActivity(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            return "redirect:/strava/login";
+        }
+        var userInfo = serviceProxy.getUserInfo(token);
+        var userSessions = serviceProxy.getUserSessions(token, new FilterDTO());
+        model.addAttribute("userInfo", ((SuccessResponseDTO) userInfo).getData());
+        model.addAttribute("userSessions", ((SuccessResponseDTO) userSessions).getValue("sessions"));
+        return "views/my_activity";
+    }
+
 }

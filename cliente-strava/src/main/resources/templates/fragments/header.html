@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <header>
+        <nav> 
+            <ul>
+                <li><img th:src="@{/images/logo.webp}" alt="Logo Strava"></li>
+                <li><a href="/strava/myactivity">Mi actividad</a></li>
+                <li><a href="/strava/challenges">Retos</a></li>
+            </ul>
+            <ul>
+                <li><button class="orange" onclick="location.href='/strava/register'"> Registrarse </button></li>
+                <li><button onclick="location.href='/strava/login'"> Iniciar sesión </button></li>
+                <li><button onclick="location.href='/logout'"> Cerrar sesión </button></li>
+            </ul>
+        </nav>
+    </header>
+</body>
+</html>

@@ -3,8 +3,6 @@ package com.cliente.dto;
 import java.time.LocalDate;
 
 import com.cliente.entity.enumeration.SportType;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
@@ -26,16 +24,8 @@ public class FilterDTO {
     @Positive(message = "Limit must be a positive number.")
     private Integer limit = null;
 
-    @JsonCreator
-    public FilterDTO(
-        @JsonProperty("startDate") LocalDate startDate,
-        @JsonProperty("endDate") LocalDate endDate,
-        @JsonProperty("sport") SportType sport,
-        @JsonProperty("limit") Integer limit) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.sport = sport;
-        this.limit = limit;
+    // Constructor vacío
+    public FilterDTO() {
     }
 
     // Getters y Setters
