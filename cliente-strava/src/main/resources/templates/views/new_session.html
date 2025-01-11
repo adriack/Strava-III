@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nueva Sesión</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/new_session.css}">
+</head>
+<body>
+    <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
+    <main>
+        <h1>Nueva sesión de entrenamiento</h1>
+        <form th:action="@{/strava/createSession}" method="post" th:object="${sessionDTO}">
+            <label for="title">Título</label>
+            <input type="text" id="title" name="title" th:value="*{title}" placeholder="Morning Run" required>
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error"></div>
+            
+            <label for="sport">Deporte</label>
+            <select id="sport" name="sport" th:value="*{sport}" required>
+                <option value="CICLISMO">Ciclismo</option>
+                <option value="RUNNING">Running</option>
+            </select>
+            <div th:if="${#fields.hasErrors('sport')}" th:errors="*{sport}" class="error"></div>
+            
+            <label for="startDate">Fecha de inicio</label>
+            <input type="date" id="startDate" name="startDate" th:value="*{startDate}" th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+            <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="error"></div>
+        
+            
+            <label for="startTime">Hora de inicio</label>
+            <input type="time" id="startTime" name="startTime" th:value="*{startTime}" required>
+            <div th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="error"></div>
+            
+            <label for="duration">Duración (min)</label>
+            <input type="number" id="duration" name="duration" th:value="*{duration}" placeholder="30" step="0.1" min="0.1" required>
+            <div th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}" class="error"></div>
+            
+            <label for="distance">Distancia (km)</label>
+            <input type="number" id="distance" name="distance" th:value="*{distance}" step="0.01" placeholder="5.0" min="0.01" required>
+            <div th:if="${#fields.hasErrors('distance')}" th:errors="*{distance}" class="error"></div>
+            
+            <button type="submit" class="orange">Registrar sesión</button>
+        </form>
+    </main>
+
+</body>
+</html>

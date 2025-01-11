@@ -62,7 +62,7 @@ public class ChallengeService {
         
         // Establecer un límite por defecto de 5 si el valor de limit es null
         if (challengeFilterDTO.getLimit() == null) {
-            challengeFilterDTO.setLimit(5);
+            challengeFilterDTO.setLimit(Integer.MAX_VALUE);
         }
     
         Pageable pageable = PageRequest.of(0, challengeFilterDTO.getLimit());

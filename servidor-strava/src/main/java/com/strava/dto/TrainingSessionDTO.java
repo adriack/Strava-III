@@ -47,6 +47,7 @@ public class TrainingSessionDTO {
     private LocalTime startTime;
 
     @NotNull(message = "Duration is required.")
+    @Positive(message = "Duration must be greater than zero.")
     @Schema(description = "Duration of the session in minutes.", example = "30.0")
     private Double duration;
 

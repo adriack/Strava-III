@@ -5,9 +5,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import com.cliente.entity.enumeration.SportType;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -21,49 +19,37 @@ public class TrainingSessionDTO {
     @Schema(description = "ID of the training session.", example = "550e8400-e29b-41d4-a716-446655440000", nullable = true, hidden = true)
     private UUID id;
 
-    @NotBlank(message = "Title is required.")
+    @NotBlank(message = "El título es obligatorio.")
     @Schema(description = "Title of the training session.", example = "Morning Run")
     private String title;
 
-    @NotNull(message = "Sport is required.")
+    @NotNull(message = "El deporte es obligatorio.")
     @Schema(description = "Type of sport for the session.", example = "RUNNING")
     private SportType sport;
 
-    @NotNull(message = "Distance is required.")
-    @Positive(message = "Distance must be greater than zero.")
+    @NotNull(message = "La distancia es obligatoria.")
+    @Positive(message = "La distancia debe ser mayor que cero.")
     @Schema(description = "Distance covered during the session in kilometers.", example = "5.0")
     private Double distance;
 
-    @NotNull(message = "Start date is required.")
-    @PastOrPresent(message = "Start date cannot be in the future.")
+    @NotNull(message = "La fecha de inicio es obligatoria.")
+    @PastOrPresent(message = "La fecha de inicio no puede estar en el futuro.")
     @Schema(description = "Date when the session started.", example = "2024-12-11")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @NotNull(message = "Start time is required.")
+    @NotNull(message = "La hora de inicio es obligatoria.")
     @Schema(description = "Time when the session started.", example = "06:30")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
-    @NotNull(message = "Duration is required.")
+    @NotNull(message = "La duración es obligatoria.")
+    @Positive(message = "La duración debe ser mayor que cero.")
     @Schema(description = "Duration of the session in minutes.", example = "30.0")
     private Double duration;
 
-    @JsonCreator
-    public TrainingSessionDTO(
-            @JsonProperty("title") String title,
-            @JsonProperty("sport") SportType sport,
-            @JsonProperty("distance") Double distance,
-            @JsonProperty("startDate") LocalDate startDate,
-            @JsonProperty("startTime") LocalTime startTime,
-            @JsonProperty("duration") Double duration) {
-
-        this.title = title;
-        this.sport = sport;
-        this.distance = distance;
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.duration = duration;
+    public TrainingSessionDTO() {
+        // Constructor vacío
     }
 
     // Getters y Setters

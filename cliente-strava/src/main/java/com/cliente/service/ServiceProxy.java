@@ -14,6 +14,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.stereotype.Service;
 
 import com.cliente.dto.ClientErrorResponseDTO;
+import com.cliente.dto.FilterDTO;
 import com.cliente.dto.SuccessResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,9 +44,11 @@ public class ServiceProxy {
                 String responseBody = new String(response.getEntity().getContent().readAllBytes());
                 
                 if (statusCode >= 200 && statusCode < 300) {
+                    logger.log(Level.INFO, "Successful response: {0} - {1}", new Object[]{statusCode, responseBody});
                     Map<String, Object> responseMap = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
                     return new SuccessResponseDTO(responseMap);
                 } else if (statusCode >= 400 && statusCode < 500) {
+                    logger.log(Level.WARNING, "Client error response: {0} - {1}", new Object[]{statusCode, responseBody});
                     Map<String, Object> errorMap = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
                     return new ClientErrorResponseDTO(errorMap);
                 }
@@ -103,7 +106,7 @@ public class ServiceProxy {
         return handleRequest(request);
     }
 
-    public Object updateUserPhysicalInfo(String token, Object userPhysicalInfoDTO) {
+    public Object updateUserInfo(String token, Object userPhysicalInfoDTO) {
         try {
             HttpPatch request = new HttpPatch(serverBaseUrl + "/users/info");
             setAuthHeader(request, token);
@@ -128,8 +131,38 @@ public class ServiceProxy {
     }
 
     public Object getUserSessions(String token, Object filterDTO) {
-        HttpGet request = new HttpGet(serverBaseUrl + "/sessions");
+        FilterDTO filter = (FilterDTO) filterDTO;
+        
+        // Crear StringBuilder para construir la URL de manera eficiente
+        StringBuilder urlBuilder = new StringBuilder(serverBaseUrl + "/sessions?");
+        
+        // Agregar parámetros a la URL solo si no son nulos ni vacíos
+        if (filter.getStartDate() != null) {
+            urlBuilder.append("startDate=").append(filter.getStartDate()).append("&");
+        }
+        if (filter.getEndDate() != null) {
+            urlBuilder.append("endDate=").append(filter.getEndDate()).append("&");
+        }
+        if (filter.getSport() != null && !filter.getSport().toString().isEmpty()) {
+            urlBuilder.append("sport=").append(filter.getSport().toString()).append("&");
+        }
+        if (filter.getLimit() != null) {
+            urlBuilder.append("limit=").append(filter.getLimit()).append("&");
+        }
+    
+        // Eliminar el último '&' si se añadió alguno
+        String url = urlBuilder.toString();
+        if (url.endsWith("&")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        
+        // Crear la solicitud GET
+        HttpGet request = new HttpGet(url);
+        
+        // Establecer el encabezado de autenticación
         setAuthHeader(request, token);
+    
+        // Manejar la solicitud y devolver la respuesta
         return handleRequest(request);
     }
 

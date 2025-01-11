@@ -28,6 +28,13 @@ public class FilterDTO {
     public FilterDTO() {
     }
 
+    // Constructor con parámetros
+    public FilterDTO(SportType sport, LocalDate startDate, LocalDate endDate) {
+        this.sport = sport;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     // Getters y Setters
     public LocalDate getStartDate() {
         return startDate;

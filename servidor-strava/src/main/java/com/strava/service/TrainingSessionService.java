@@ -59,7 +59,7 @@ public class TrainingSessionService {
 
         // Establecer valores predeterminados si son null
         if (filterDTO.getLimit() == null) {
-            filterDTO.setLimit(5);  // Establecer límite por defecto a 5
+            filterDTO.setLimit(Integer.MAX_VALUE);  // Establecer límite por defecto a 5
         }
 
         if (endDate == null) {

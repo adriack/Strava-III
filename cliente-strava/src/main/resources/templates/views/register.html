@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
 </head>
 <body>
-    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <th:block th:replace="~{fragments/header_unlogged :: header}"></th:block>
     <main>
         <h1>Registrarse</h1>
         <form th:action="@{/strava/register}" method="post" th:object="${registrationDTO}">
@@ -92,16 +92,16 @@
         </form>        
         
         <!-- Mostrar mensaje de error -->
-        <div th:if="${unexpectedError == true}" class="error-popup">
-            <div class="error-popup-content">
+        <div th:if="${unexpectedError == true}" class="popup" id="error-popup">
+            <div class="popup-content">
                 <p>Se ha producido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.</p>
-                <button onclick="closeErrorPopup()">Aceptar</button>
+                <button class="orange" onclick="closeErrorPopup()">Aceptar</button>
             </div>
         </div>
     </main>
     <script>
         function closeErrorPopup() {
-            document.querySelector('.error-popup').style.display = 'none';
+            document.getElementById('error-popup').style.display = 'none';
         }
     </script>
 </body>

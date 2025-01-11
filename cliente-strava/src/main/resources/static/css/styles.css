@@ -56,7 +56,7 @@ form input, form select {
     margin-bottom: 10px;
 }
 
-.error-popup {
+.popup {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -68,14 +68,14 @@ form input, form select {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.error-popup-content {
+.popup-content {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
 }
 
-.error-popup-content p {
+.popup-content p {
     margin-bottom: 20px;
 }
 
@@ -114,4 +114,23 @@ form button {
 .error-card a {
     text-decoration: underline;
     color: rgb(145, 42, 42);
+}
+
+form.horizontal-form {
+    margin-left: 0;
+    margin-right: 0;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+}
+
+form.horizontal-form input,
+form.horizontal-form select,
+form.horizontal-form button {
+    width: auto;
+    flex-grow: 1;
 }

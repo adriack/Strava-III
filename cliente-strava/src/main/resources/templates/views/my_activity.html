@@ -7,58 +7,102 @@
     <link rel="stylesheet" th:href="@{/css/my_activity.css}">
 </head>
 <body>
-    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
     <main>
-        <div class = "title">
-            <h1>¡Hola, <span th:text="${userInfo['name']}"></span>!</h1>
-            <button class="icon-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M3 21v-4.25L16.2 3.575q.3-.275.663-.425t.762-.15t.775.15t.65.45L20.425 5q.3.275.438.65T21 6.4q0 .4-.137.763t-.438.662L7.25 21zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z"/></svg></button>
-            <button class="icon-button" id="info-button">ℹ</button>
-            <div class="info-card">
-                <p>UUID: <span th:text="${userInfo['id']}"></span></p>
-                <p>Email: <span th:text="${userInfo['email']}"></span></p>
-                <p>Proveedor de autenticación: <span th:text="${userInfo['authProvider']}"></span></p>
+        <div th:if="${userInfo != null}">
+            <div class="title">
+                <h1>¡Hola, <span th:text="${userInfo['name']}"></span>!</h1>
+                <button class="icon-button" id="info-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none"><circle cx="8" cy="8" r="8" fill="currentColor" fill-opacity="0.25" transform="matrix(-1 0 0 1 20 4)"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M11 10.5h.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h.5m-1-7h.01"/></g></svg></button>
+                <div class="info-card">
+                    <p>UUID: <span th:text="${userInfo['id']}"></span></p>
+                    <p>Email: <span th:text="${userInfo['email']}"></span></p>
+                    <p>Proveedor de autenticación: <span th:text="${userInfo['authProvider']}"></span></p>
+                </div>
+            </div>
+
+            <h2>Sobre mí</h2>
+            <div class="user-info-card">
+                <ul class="user-info">
+                    <li>
+                        Mi fecha de nacimiento: 
+                        <span th:text="${userInfo['dateOfBirth']} ?: 'No especificado'"></span>
+                        <button th:if="${userInfo['dateOfBirth'] != null}" onclick="toggleEditForm('dateOfBirth')">Editar</button>
+                        <button th:if="${userInfo['dateOfBirth'] == null}" onclick="toggleEditForm('dateOfBirth')">Añadir</button>
+                        <form id="dateOfBirth-form" class="horizontal-form" th:action="@{/strava/updateUserInfo}" method="post" style="display:none;">
+                            <input type="date" name="dateOfBirth" th:value="${userInfo['dateOfBirth']}" 
+                            th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required/>
+                            <button type="submit" class="orange">Guardar</button>
+                        </form>
+                    </li>
+                    <li>
+                        Mi peso: 
+                        <span th:text="${userInfo['weight']} ?: 'No especificado'"></span>
+                        <button th:if="${userInfo['weight'] != null}" onclick="toggleEditForm('weight')">Editar</button>
+                        <button th:if="${userInfo['weight'] == null}" onclick="toggleEditForm('weight')">Añadir</button>
+                        <form id="weight-form" class="horizontal-form" th:action="@{/strava/updateUserInfo}" method="post" style="display:none;">
+                            <input type="number" name="weight" th:value="${userInfo['weight']}" 
+                            step="0.1" min="20" max="500" required/>
+                            <button type="submit" class="orange">Guardar</button>
+                        </form>
+                    </li>
+                    <li>
+                        Mi altura: 
+                        <span th:text="${userInfo['height']} ?: 'No especificado'"></span>
+                        <button th:if="${userInfo['height'] != null}" onclick="toggleEditForm('height')">Editar</button>
+                        <button th:if="${userInfo['height'] == null}" onclick="toggleEditForm('height')">Añadir</button>
+                        <form id="height-form" class="horizontal-form" th:action="@{/strava/updateUserInfo}" method="post" style="display:none;">
+                            <input type="number" name="height" th:value="${userInfo['height']}" 
+                            min="0.30" max="3.0" step="0.01" required/>
+                            <button type="submit" class="orange">Guardar</button>
+                        </form>
+                    </li>
+                    <li>
+                        Mi frecuencia cardíaca en reposo: 
+                        <span th:text="${userInfo['restingHeartRate']} ?: 'No especificado'"></span>
+                        <button th:if="${userInfo['restingHeartRate'] != null}" onclick="toggleEditForm('restingHeartRate')">Editar</button>
+                        <button th:if="${userInfo['restingHeartRate'] == null}" onclick="toggleEditForm('restingHeartRate')">Añadir</button>
+                        <form id="restingHeartRate-form" class="horizontal-form" th:action="@{/strava/updateUserInfo}" method="post" style="display:none;">
+                            <input type="number" name="restingHeartRate" th:value="${userInfo['restingHeartRate']}" 
+                            min="20" max="200" required/>
+                            <button type="submit" class="orange">Guardar</button>
+                        </form>
+                    </li>
+                    <li>
+                        Mi frecuencia cardíaca máxima: 
+                        <span th:text="${userInfo['maxHeartRate']} ?: 'No especificado'"></span>
+                        <button th:if="${userInfo['maxHeartRate'] != null}" onclick="toggleEditForm('maxHeartRate')">Editar</button>
+                        <button th:if="${userInfo['maxHeartRate'] == null}" onclick="toggleEditForm('maxHeartRate')">Añadir</button>
+                        <form id="maxHeartRate-form" class="horizontal-form" th:action="@{/strava/updateUserInfo}" method="post" style="display:none;">
+                            <input type="number" name="maxHeartRate" th:value="${userInfo['maxHeartRate']}" 
+                            min="30" max="300" required/>
+                            <button type="submit" class="orange">Guardar</button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
-
-        <h2>Sobre mí</h2>
-        <div class="user-info-card">
-            <ul class="user-info">
-                <li>
-                    Mi fecha de nacimiento: 
-                    <span th:text="${userInfo['dateOfBirth']} ?: 'No especificado'"></span>
-                    <button th:if="${userInfo['dateOfBirth'] != null}">Editar</button>
-                    <button th:if="${userInfo['dateOfBirth'] == null}">Añadir</button>
-                </li>
-                <li>
-                    Mi peso: 
-                    <span th:text="${userInfo['weight']} ?: 'No especificado'"></span>
-                    <button th:if="${userInfo['weight'] != null}">Editar</button>
-                    <button th:if="${userInfo['weight'] == null}">Añadir</button>
-                </li>
-                <li>
-                    Mi altura: 
-                    <span th:text="${userInfo['height']} ?: 'No especificado'"></span>
-                    <button th:if="${userInfo['height'] != null}">Editar</button>
-                    <button th:if="${userInfo['height'] == null}">Añadir</button>
-                </li>
-                <li>
-                    Mi frecuencia cardíaca en reposo: 
-                    <span th:text="${userInfo['restingHeartRate']} ?: 'No especificado'"></span>
-                    <button th:if="${userInfo['restingHeartRate'] != null}">Editar</button>
-                    <button th:if="${userInfo['restingHeartRate'] == null}">Añadir</button>
-                </li>
-                <li>
-                    Mi frecuencia cardíaca máxima: 
-                    <span th:text="${userInfo['maxHeartRate']} ?: 'No especificado'"></span>
-                    <button th:if="${userInfo['maxHeartRate'] != null}">Editar</button>
-                    <button th:if="${userInfo['maxHeartRate'] == null}">Añadir</button>
-                </li>
-            </ul>
+        <div th:if="${userInfo == null}" class="error-card">
+            <p>Error inesperado: No se ha podido cargar la información del usuario.</p>
         </div>
 
         <h2>Mis sesiones de entrenamiento</h2>
-        <div class="sessions-container">
-            <button id="new-session">+</button>
+
+        <form th:action="@{/strava/my_activity}" method="get" class="horizontal-form" id="sessions-filter">
+            <label for="sport">Deporte:</label>
+            <select name="sport" id="sport">
+                <option value="" th:selected="${sport == null}">Todos</option>
+                <option value="CICLISMO" th:selected="${sport == 'CICLISMO'}">Ciclismo</option>
+                <option value="RUNNING" th:selected="${sport == 'RUNNING'}">Running</option>
+            </select>
+            <label for="startDate">Desde:</label>
+            <input type="date" name="startDate" id="startDate" th:value="${#temporals.format(#temporals.createNow().withDayOfMonth(1), 'yyyy-MM-dd')}">
+            <label for="endDate">Hasta:</label>
+            <input type="date" name="endDate" id="endDate">
+            <button type="submit" class="orange">Filtrar</button>
+        </form>
+
+        <div th:if="${userSessions != null}" class="sessions-container">
+            <button id="new-session" onclick="window.location.href='/strava/new_session'">+</button>
             <div class="session-card" th:each="userSession : ${userSessions}">
                 <div class="session-title">
                     <h3>
@@ -66,7 +110,17 @@
                         <svg th:if="${userSession['sport']} == 'RUNNING'" class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path fill="currentColor" d="m353.415 200l-30.981-57.855l-60.717-20.239l-.14.432L167.21 149.3A32.13 32.13 0 0 0 144 180.068V264h32v-83.931l73.6-21.028l-32.512 99.633l-.155-.056l-29.464 82.5a16.09 16.09 0 0 1-20.127 9.8l-66.282-22.097l-10.12 30.358l66.282 22.093a48 48 0 0 0 60.378-29.391l24.232-67.849l17.173 5.6l48.3 48.3A15.9 15.9 0 0 1 312 349.255V456h32V349.255a47.7 47.7 0 0 0-14.059-33.942l-48.265-48.264l26.783-82.077l19.269 34.683A24.01 24.01 0 0 0 348.707 232H432v-32Zm-66.587-90.293a36 36 0 1 0-12.916-27.619a35.85 35.85 0 0 0 12.916 27.619"/></svg>
                         <span th:text="${userSession['title']}"></span>
                     </h3>
-                    <button><svg class="icon"xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg></button>
+                    <form id="delete-form-[[${userSession['id']}]]" th:action="@{/strava/deleteSession}" method="post">
+                        <input type="hidden" name="sessionId" th:value="${userSession['id']}"/>
+                        <div class="tooltip">
+                            <button class="borrar-sesion" th:onclick="'document.getElementById('' + 'delete-form-' + ${userSession.id}).submit();'">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/>
+                                </svg>
+                            </button>
+                            <span class="tooltiptext">¡Esta acción es irreversible!</span>
+                        </div>
+                    </form>
                 </div>
                 <p>
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
@@ -83,6 +137,32 @@
                 
             </div>
         </div>
+        <div th:if="${userSessions == null}" class="error-card">
+            <p>Error inesperado: No se han podido cargar las sesiones de entrenamiento.</p>
+        </div>
+
+        <!-- Mostrar mensaje de error -->
+        <div th:if="${unexpectedError == true}" class="popup" id="error-popup">
+            <div class="popup-content">
+                <p>Se ha producido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.</p>
+                <button class="orange" onclick="closeErrorPopup()">Aceptar</button>
+            </div>
+        </div>
+        
     </main>
+    <script>
+        function closeErrorPopup() {
+            document.getElementById('error-popup').style.display = 'none';
+        }
+
+        function toggleEditForm(formId) {
+            var form = document.getElementById(formId + '-form');
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'flex';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
