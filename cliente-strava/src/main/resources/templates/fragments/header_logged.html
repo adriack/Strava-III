@@ -1,35 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-    <header>
-        <nav> 
-            <ul>
-                <li><img th:src="@{/images/logo.webp}" alt="Logo Strava"></li>
-                <li><a href="/strava/challenges">Retos</a></li>
-                <li><a id="myActivityLink" href="#">Mi actividad</a></li>
-            </ul>
-            <ul>
-                <li><button onclick="location.href='/logout'"> Cerrar sesión </button></li>
-            </ul>
-        </nav>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const today = new Date();
-                const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
 
-                // Formatear la fecha localmente
-                const year = startDate.getFullYear();
-                const month = String(startDate.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda
-                const day = String(startDate.getDate()).padStart(2, '0'); // Siempre será 01
-                const formattedDate = `${year}-${month}-${day}`;
+    <body>
+        <header>
+            <nav>
+                <ul>
+                    <li>
+                        <img th:src="@{/images/logo.webp}" alt="Logo Strava" />
+                    </li>
+                    <li><a href="/strava/challenges">Retos</a></li>
+                    <li><a id="myActivityLink" href="#">Mi actividad</a></li>
+                </ul>
+                <ul>
+                    <li>
+                        <button onclick="location.href='/strava/logout'">
+                            Cerrar sesión
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const today = new Date();
+                    const startDate = new Date(
+                        today.getFullYear(),
+                        today.getMonth(),
+                        1
+                    );
 
-                document.getElementById('myActivityLink').href = `/strava/my_activity?startDate=${formattedDate}`;
-            });
-        </script>
-    </header>
-</body>
+                    // Formatear la fecha localmente
+                    const year = startDate.getFullYear();
+                    const month = String(startDate.getMonth() + 1).padStart(
+                        2,
+                        "0"
+                    ); // Añadir ceros a la izquierda
+                    const day = String(startDate.getDate()).padStart(2, "0"); // Siempre será 01
+                    const formattedDate = `${year}-${month}-${day}`;
+
+                    document.getElementById(
+                        "myActivityLink"
+                    ).href = `/strava/my_activity?startDate=${formattedDate}`;
+                });
+            </script>
+        </header>
+    </body>
 </html>

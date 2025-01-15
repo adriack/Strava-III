@@ -38,22 +38,27 @@ public class ServiceProxy {
             if (request.getEntity() != null) {
                 request.setHeader("Content-Type", "application/json");
             }
-            
+
             return httpClient.execute(request, response -> {
                 int statusCode = response.getCode();
                 String responseBody = new String(response.getEntity().getContent().readAllBytes());
-                
+
                 if (statusCode >= 200 && statusCode < 300) {
-                    logger.log(Level.INFO, "Successful response: {0} - {1}", new Object[]{statusCode, responseBody});
-                    Map<String, Object> responseMap = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
+                    logger.log(Level.INFO, "Successful response: {0} - {1}", new Object[] { statusCode, responseBody });
+                    Map<String, Object> responseMap = objectMapper.readValue(responseBody,
+                            new TypeReference<Map<String, Object>>() {
+                            });
                     return new SuccessResponseDTO(responseMap);
                 } else if (statusCode >= 400 && statusCode < 500) {
-                    logger.log(Level.WARNING, "Client error response: {0} - {1}", new Object[]{statusCode, responseBody});
-                    Map<String, Object> errorMap = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
+                    logger.log(Level.WARNING, "Client error response: {0} - {1}",
+                            new Object[] { statusCode, responseBody });
+                    Map<String, Object> errorMap = objectMapper.readValue(responseBody,
+                            new TypeReference<Map<String, Object>>() {
+                            });
                     return new ClientErrorResponseDTO(errorMap);
                 }
-                
-                logger.log(Level.SEVERE, "Unexpected response: {0} - {1}", new Object[]{statusCode, responseBody});
+
+                logger.log(Level.SEVERE, "Unexpected response: {0} - {1}", new Object[] { statusCode, responseBody });
                 return null;
             });
         } catch (IOException e) {
@@ -132,10 +137,10 @@ public class ServiceProxy {
 
     public Object getUserSessions(String token, Object filterDTO) {
         FilterDTO filter = (FilterDTO) filterDTO;
-        
+
         // Crear StringBuilder para construir la URL de manera eficiente
         StringBuilder urlBuilder = new StringBuilder(serverBaseUrl + "/sessions?");
-        
+
         // Agregar parámetros a la URL solo si no son nulos ni vacíos
         if (filter.getStartDate() != null) {
             urlBuilder.append("startDate=").append(filter.getStartDate()).append("&");
@@ -149,19 +154,19 @@ public class ServiceProxy {
         if (filter.getLimit() != null) {
             urlBuilder.append("limit=").append(filter.getLimit()).append("&");
         }
-    
+
         // Eliminar el último '&' si se añadió alguno
         String url = urlBuilder.toString();
         if (url.endsWith("&")) {
             url = url.substring(0, url.length() - 1);
         }
-        
+
         // Crear la solicitud GET
         HttpGet request = new HttpGet(url);
-        
+
         // Establecer el encabezado de autenticación
         setAuthHeader(request, token);
-    
+
         // Manejar la solicitud y devolver la respuesta
         return handleRequest(request);
     }
