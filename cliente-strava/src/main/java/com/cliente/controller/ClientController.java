@@ -1,6 +1,9 @@
 package com.cliente.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -324,6 +327,45 @@ public class ClientController {
             redirectAttributes.addFlashAttribute("unexpectedError", true);
             return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
         }
+    }
+
+    @GetMapping("/my_challenges")
+    public String showMyChallenges(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            return "redirect:/strava/login";
+        }
+
+        var response = serviceProxy.getAcceptedChallenges(token, true);
+        if (response instanceof SuccessResponseDTO successResponseDTO) {
+            var challenges = successResponseDTO.getValue("challenges");
+            List<Map<String, Object>> activeChallenges = new ArrayList<>();
+            List<Map<String, Object>> completedChallenges = new ArrayList<>();
+            List<Map<String, Object>> futureChallenges = new ArrayList<>();
+
+            LocalDate today = LocalDate.now();
+            for (Map<String, Object> challenge : (List<Map<String, Object>>) challenges) {
+                LocalDate startDate = LocalDate.parse((String) challenge.get("startDate"));
+                LocalDate endDate = LocalDate.parse((String) challenge.get("endDate"));
+
+                if (endDate.isBefore(today)) {
+                    completedChallenges.add(challenge);
+                } else if (startDate.isAfter(today)) {
+                    futureChallenges.add(challenge);
+                } else {
+                    activeChallenges.add(challenge);
+                }
+            }
+
+            model.addAttribute("activeChallenges", activeChallenges);
+            model.addAttribute("completedChallenges", completedChallenges);
+            model.addAttribute("futureChallenges", futureChallenges);
+            model.addAttribute("fetchChallengesError", false);
+        } else {
+            model.addAttribute("fetchChallengesError", true);
+        }
+
+        return "views/my_challenges";
     }
 
 }

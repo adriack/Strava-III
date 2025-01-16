@@ -1,7 +1,7 @@
 <th:block th:fragment="userInfo">
     <div th:if="${userInfo != null}">
         <div class="title">
-            <h1>¡Hola, <span th:text="${userInfo['name']}"></span>!</h1>
+            <h2>¡Hola, <span th:text="${userInfo['name']}"></span>!</h2>
             <button class="icon-button" id="info-button">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <h2>Sobre mí</h2>
+        <p>Este es un resumen de tu información física.</p>
         <div class="user-info-card">
             <ul class="user-info">
                 <li>

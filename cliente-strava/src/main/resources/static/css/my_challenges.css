@@ -1,0 +1,33 @@
+#proximos .challenge-card {
+    background-color: peachpuff;
+}
+
+#finalizados .challenge-card {
+    background-color: whitesmoke;
+}
+
+.challenge-links-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+    .challenge-link-card {
+        flex: 1;
+        background-color: rgb(255, 239, 212);
+        text-align: center;
+        padding: 20px;
+        text-decoration: none;
+        color: black;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all ease 0.2s;
+    }
+
+    .challenge-link-card:hover {
+        background-color: rgb(255, 184, 129);
+    }

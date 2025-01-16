@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mis Retos Aceptados</title>
+        <link rel="stylesheet" th:href="@{/css/challenges_list.css}" />
+        <link rel="stylesheet" th:href="@{/css/my_challenges.css}" />
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+        <link rel="stylesheet" th:href="@{/css/header.css}" />
+    </head>
+    <body>
+        <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
+
+        <main>
+            <h1>Mis retos</h1>
+            <p class="page-description">Aquí verás todos los retos que hayas creado o aceptado.</p>
+
+            <section>
+                <h2>Comunidad</h2>
+                <p>Interactúa con la comunidad incentivando al deporte con nuevos retos.</p>
+                <div class="challenge-links-container">
+                    <a href="/strava/discover_challenges" class="challenge-link-card">Descubre nuevos retos</a>
+                    <a href="/strava/new_challenge" class="challenge-link-card">Publica un reto</a>
+                </div>
+
+            </section>
+
+            <section
+                th:if="${fetchChallengesError == false}"
+                id="accepted-challenges-container"
+            >
+                <section id="activos">
+                    <h2>Activos</h2>
+                    <th:block th:if="${#lists.isEmpty(activeChallenges)}">
+                        <p>No hay retos activos.</p>
+                    </th:block>
+                    <th:block
+                        th:unless="${#lists.isEmpty(activeChallenges)}"
+                        th:replace="~{fragments/challenge_list :: challenge_list(challenges=${activeChallenges})}"
+                    ></th:block>
+                </section>
+
+                <section id="proximos">
+                    <h2>Próximos</h2>
+                    <th:block th:if="${#lists.isEmpty(futureChallenges)}">
+                        <p>No hay retos próximos.</p>
+                    </th:block>
+                    <th:block
+                        th:unless="${#lists.isEmpty(futureChallenges)}"
+                        th:replace="~{fragments/challenge_list :: challenge_list(challenges=${futureChallenges})}"
+                    ></th:block>
+                </section>
+
+                <section id="finalizados">
+                    <h2>Finalizados</h2>
+                    <th:block th:if="${#lists.isEmpty(completedChallenges)}">
+                        <p>No hay retos finalizados.</p>
+                    </th:block>
+                    <th:block
+                        th:unless="${#lists.isEmpty(completedChallenges)}"
+                        th:replace="~{fragments/challenge_list :: challenge_list(challenges=${completedChallenges})}"
+                    ></th:block>
+                </section>
+            </section>
+
+            <div th:if="${fetchChallengesError == true}" class="error-card">
+                <p>
+                    Error inesperado: No se han podido cargar los retos
+                    aceptados.
+                </p>
+            </div>
+        </main>
+        <script src="/js/my_challenges.js"></script>
+    </body>
+</html>

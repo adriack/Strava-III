@@ -9,49 +9,57 @@
     <body>
         <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
         <main>
-            <div id="user-info-container">
-                <th:block th:replace="~{fragments/user_info :: userInfo}"></th:block>
-            </div>
-            <h2>Mis sesiones de entrenamiento</h2>
-            <form
-                class="horizontal-form"
-                id="sessions-filter"
-                th:action="@{/strava/filterSessions}"
-                method="post"
-            >
-                <label for="sport">Deporte:</label>
-                <select name="sport" id="sport">
-                    <option value="" th:selected="${sport == null}">
-                        Todos
-                    </option>
-                    <option
-                        value="CICLISMO"
-                        th:selected="${sport == 'CICLISMO'}"
-                    >
-                        Ciclismo
-                    </option>
-                    <option value="RUNNING" th:selected="${sport == 'RUNNING'}">
-                        Running
-                    </option>
-                </select>
-                <label for="startDate">Desde:</label>
-                <input
-                    type="date"
-                    name="startDate"
-                    id="startDate"
-                    th:value="${startDate}"
-                />
-                <label for="endDate">Hasta:</label>
-                <input
-                    type="date"
-                    name="endDate"
-                    id="endDate"
-                    th:value="${endDate}"
-                />
-            </form>
-            <div id="training-sessions-container">
-                <th:block th:replace="~{fragments/training_sessions :: trainingSessions}"></th:block>
-            </div>
+            <h1>Mi actividad</h1>
+
+            <section>
+                <div id="user-info-container">
+                    <th:block th:replace="~{fragments/user_info :: userInfo}"></th:block>
+                </div>
+            </section>
+
+            <section>
+                <h2>Mis sesiones de entrenamiento</h2>
+                <form
+                    class="horizontal-form"
+                    id="sessions-filter"
+                    th:action="@{/strava/filterSessions}"
+                    method="post"
+                >
+                    <label for="sport">Deporte:</label>
+                    <select name="sport" id="sport">
+                        <option value="" th:selected="${sport == null}">
+                            Todos
+                        </option>
+                        <option
+                            value="CICLISMO"
+                            th:selected="${sport == 'CICLISMO'}"
+                        >
+                            Ciclismo
+                        </option>
+                        <option value="RUNNING" th:selected="${sport == 'RUNNING'}">
+                            Running
+                        </option>
+                    </select>
+                    <label for="startDate">Desde:</label>
+                    <input
+                        type="date"
+                        name="startDate"
+                        id="startDate"
+                        th:value="${startDate}"
+                    />
+                    <label for="endDate">Hasta:</label>
+                    <input
+                        type="date"
+                        name="endDate"
+                        id="endDate"
+                        th:value="${endDate}"
+                    />
+                </form>
+                <div id="training-sessions-container">
+                    <th:block th:replace="~{fragments/training_sessions :: trainingSessions}"></th:block>
+                </div>
+            </section>
+
             <div th:replace="~{fragments/error_solicitud :: errorPopup(${unexpectedError})}"></div>
         </main>
         <script src="/js/scripts.js"></script>
