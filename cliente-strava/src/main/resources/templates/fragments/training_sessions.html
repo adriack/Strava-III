@@ -1,44 +1,4 @@
 <th:block th:fragment="trainingSessions">
-    <h2>Mis sesiones de entrenamiento</h2>
-
-    <form
-        class="horizontal-form"
-        id="sessions-filter"
-        th:action="@{/strava/filterSessions}"
-        method="post"
-        oninput="submitForm(this, 'training-sessions-container');"
-    >
-        <label for="sport">Deporte:</label>
-        <select name="sport" id="sport">
-            <option value="" th:selected="${sport == null}">
-                Todos
-            </option>
-            <option
-                value="CICLISMO"
-                th:selected="${sport == 'CICLISMO'}"
-            >
-                Ciclismo
-            </option>
-            <option value="RUNNING" th:selected="${sport == 'RUNNING'}">
-                Running
-            </option>
-        </select>
-        <label for="startDate">Desde:</label>
-        <input
-            type="date"
-            name="startDate"
-            id="startDate"
-            th:value="${startDate}"
-        />
-        <label for="endDate">Hasta:</label>
-        <input
-            type="date"
-            name="endDate"
-            id="endDate"
-            th:value="${endDate}"
-        />
-    </form>
-
     <div th:if="${userSessions != null}" class="sessions-container">
         <button
             id="new-session"
@@ -168,6 +128,7 @@
             </p>
         </div>
     </div>
+
     <div th:if="${userSessions == null}" class="error-card">
         <p>
             Error inesperado: No se han podido cargar las sesiones de
