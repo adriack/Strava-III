@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cliente.dto.ChallengeDTO;
 import com.cliente.dto.ClientErrorResponseDTO;
 import com.cliente.dto.FilterDTO;
 import com.cliente.dto.LoginDTO;
@@ -330,7 +331,7 @@ public class ClientController {
     }
 
     @GetMapping("/my_challenges")
-    public String showMyChallenges(Model model, HttpSession session) {
+    public String showMyChallenges(@RequestParam(required = false) Boolean unexpectedError, Model model, HttpSession session) {
         String token = (String) session.getAttribute("userToken");
         if (token == null) {
             return "redirect:/strava/login";
@@ -365,7 +366,45 @@ public class ClientController {
             model.addAttribute("fetchChallengesError", true);
         }
 
+        if (unexpectedError != null && unexpectedError) {
+            model.addAttribute("unexpectedError", true);
+        }
+
         return "views/my_challenges";
+    }
+
+    @GetMapping("/new_challenge")
+    public String showNewChallengeForm(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            return "redirect:/strava/login";
+        }
+
+        model.addAttribute("challengeDTO", new ChallengeDTO());
+        return "views/new_challenge";
+    }
+
+    @PostMapping("/createChallenge")
+    public String createChallenge(@Valid @ModelAttribute("challengeDTO") ChallengeDTO challengeDTO, 
+                                  BindingResult bindingResult, HttpSession session, Model model,
+                                  RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            return "redirect:/strava/login";
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("challengeDTO", challengeDTO);
+            return "views/new_challenge";
+        }
+
+        var response = serviceProxy.createChallenge(token, challengeDTO);
+        if (response instanceof SuccessResponseDTO) {
+            return "redirect:/strava/my_challenges";
+        } else {
+            redirectAttributes.addFlashAttribute("unexpectedError", true);
+            return "redirect:/strava/my_challenges";
+        }
     }
 
 }

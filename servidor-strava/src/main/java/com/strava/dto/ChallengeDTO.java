@@ -11,9 +11,9 @@ import com.strava.entity.enumeration.ObjectiveType;
 import com.strava.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "Represents a challenge with its details.")
@@ -26,12 +26,12 @@ public class ChallengeDTO {
     @NotBlank(message = "Name is required.")
     private String name;
 
-    @Schema(description = "Start date of the challenge. Must be in the past or present.", example = "2024-01-01")
+    @Schema(description = "Start date of the challenge. Must be in the future or present.", example = "2026-01-01")
     @NotNull(message = "Start date is required.")
-    @PastOrPresent(message = "Start date cannot be in the future.")
+    @FutureOrPresent(message = "Start date cannot be in the past.")
     private LocalDate startDate;
 
-    @Schema(description = "End date of the challenge. Must be after or equal to the start date.", example = "2024-01-31")
+    @Schema(description = "End date of the challenge. Must be after or equal to the start date.", example = "2026-01-31")
     @NotNull(message = "End date is required.")
     private LocalDate endDate;
 

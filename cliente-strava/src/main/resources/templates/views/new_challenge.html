@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Nuevo reto</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+        <link rel="stylesheet" th:href="@{/css/header.css}" />
+        <script src="/js/new_challenge.js"></script>
+    </head>
+    <body>
+        <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
+        <main>
+            <h1>Nuevo reto</h1>
+            <form
+                th:action="@{/strava/createChallenge}"
+                method="post"
+                th:object="${challengeDTO}"
+            >
+                <label for="name">Título</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    th:value="*{name}"
+                    placeholder="Desafío de Ciclismo"
+                    required
+                />
+                <div
+                    th:if="${#fields.hasErrors('name')}"
+                    th:errors="*{name}"
+                    class="error"
+                ></div>
+
+                <label for="sport">Deporte</label>
+                <select id="sport" name="sport" th:value="*{sport}" required>
+                    <option value="CICLISMO">Ciclismo</option>
+                    <option value="RUNNING">Running</option>
+                </select>
+                <div
+                    th:if="${#fields.hasErrors('sport')}"
+                    th:errors="*{sport}"
+                    class="error"
+                ></div>
+
+                <label for="startDate">Fecha de inicio</label>
+                <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    th:value="*{startDate}"
+                    required
+                    th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                />
+                <div
+                    th:if="${#fields.hasErrors('startDate')}"
+                    th:errors="*{startDate}"
+                    class="error"
+                ></div>
+
+                <label for="endDate">Fecha de finalización</label>
+                <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    th:value="*{endDate}"
+                    required
+                    th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                />
+                <div
+                    th:if="${#fields.hasErrors('endDate')}"
+                    th:errors="*{endDate}"
+                    class="error"
+                ></div>
+
+                <label for="objectiveType">Tipo de Objetivo</label>
+                <select
+                    id="objectiveType"
+                    name="objectiveType"
+                    th:value="*{objectiveType}"
+                    required
+                >
+                    <option value="DISTANCIA">Distancia</option>
+                    <option value="TIEMPO">Tiempo</option>
+                </select>
+                <div
+                    th:if="${#fields.hasErrors('objectiveType')}"
+                    th:errors="*{objectiveType}"
+                    class="error"
+                ></div>
+
+                <label for="objectiveValue">Objetivo (km o min)</label>
+                <input
+                    type="number"
+                    id="objectiveValue"
+                    name="objectiveValue"
+                    th:value="*{objectiveValue}"
+                    step="0.01"
+                    placeholder="40.0"
+                    min="0.01"
+                    required
+                />
+                <div
+                    th:if="${#fields.hasErrors('objectiveValue')}"
+                    th:errors="*{objectiveValue}"
+                    class="error"
+                ></div>
+
+                <button type="submit" class="orange">Publicar reto</button>
+            </form>
+        </main>
+    </body>
+</html>
