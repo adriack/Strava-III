@@ -1,10 +1,6 @@
-
 package com.cliente.dto;
 
 import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Past;
@@ -16,41 +12,38 @@ public class UserPhysicalInfoDTO {
     @Schema(description = "User's full name.", example = "John Doe")
     private String name;
 
-    @Past(message = "Date of Birth must be in the past.")
+    @Past(message = "La fecha de nacimiento debe estar en el pasado.")
     @Schema(description = "User's date of birth.", example = "1990-01-15")
     private LocalDate dateOfBirth;
 
-    @Positive(message = "Weight must be greater than zero.")
+    @Positive(message = "El peso debe ser mayor que cero.")
     @Schema(description = "User's weight in kilograms.", example = "70.5")
     private Double weight;
 
-    @Positive(message = "Height must be greater than zero.")
+    @Positive(message = "La altura debe ser mayor que cero.")
     @Schema(description = "User's height in meters.", example = "1.75")
     private Double height;
 
-    @Positive(message = "MaxHeartRate must be greater than zero.")
+    @Positive(message = "La frecuencia cardíaca máxima debe ser mayor que cero.")
     @Schema(description = "User's maximum heart rate.", example = "190")
     private Integer maxHeartRate;
 
-    @Positive(message = "RestingHeartRate must be greater than zero.")
+    @Positive(message = "La frecuencia cardíaca en reposo debe ser mayor que cero.")
     @Schema(description = "User's resting heart rate.", example = "60")
     private Integer restingHeartRate;
 
-    @JsonCreator
-    public UserPhysicalInfoDTO(
-            @JsonProperty("name") String name,
-            @JsonProperty("dateOfBirth") LocalDate dateOfBirth,
-            @JsonProperty("weight") Double weight,
-            @JsonProperty("height") Double height,
-            @JsonProperty("maxHeartRate") Integer maxHeartRate,
-            @JsonProperty("restingHeartRate") Integer restingHeartRate) {
+    // Constructor vacío
+    public UserPhysicalInfoDTO() {}
 
-        this.name = name;
-        this.dateOfBirth = dateOfBirth;
-        this.weight = weight;
-        this.height = height;
-        this.maxHeartRate = maxHeartRate;
-        this.restingHeartRate = restingHeartRate;
+    @Override
+    public String toString() {
+        return "UserPhysicalInfoDTO{" +
+                "weight=" + weight +
+                ", height=" + height +
+                ", restingHeartRate=" + restingHeartRate +
+                ", maxHeartRate=" + maxHeartRate +
+                ", dateOfBirth=" + dateOfBirth +
+                '}';
     }
 
     // Getters y Setters

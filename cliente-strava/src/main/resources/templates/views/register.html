@@ -92,17 +92,8 @@
         </form>        
         
         <!-- Mostrar mensaje de error -->
-        <div th:if="${unexpectedError == true}" class="popup" id="error-popup">
-            <div class="popup-content">
-                <p>Se ha producido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.</p>
-                <button class="orange" onclick="closeErrorPopup()">Aceptar</button>
-            </div>
-        </div>
+        <div th:replace="~{fragments/error_solicitud :: errorPopup(${unexpectedError})}"></div>
     </main>
-    <script>
-        function closeErrorPopup() {
-            document.getElementById('error-popup').style.display = 'none';
-        }
-    </script>
+    <script src="/js/funciones.js"></script>
 </body>
 </html>

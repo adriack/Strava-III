@@ -1,0 +1,251 @@
+<th:block th:fragment="userInfo">
+    <div th:if="${userInfo != null}">
+        <div class="title">
+            <h1>¡Hola, <span th:text="${userInfo['name']}"></span>!</h1>
+            <button class="icon-button" id="info-button">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                >
+                    <g fill="none">
+                        <circle
+                            cx="8"
+                            cy="8"
+                            r="8"
+                            fill="currentColor"
+                            fill-opacity="0.25"
+                            transform="matrix(-1 0 0 1 20 4)"
+                        />
+                        <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M11 10.5h.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h.5m-1-7h.01"
+                        />
+                    </g>
+                </svg>
+            </button>
+            <div class="info-card">
+                <p>UUID: <span th:text="${userInfo['id']}"></span></p>
+                <p>
+                    Email: <span th:text="${userInfo['email']}"></span>
+                </p>
+                <p>
+                    Proveedor de autenticación:
+                    <span th:text="${userInfo['authProvider']}"></span>
+                </p>
+            </div>
+        </div>
+
+        <h2>Sobre mí</h2>
+        <div class="user-info-card">
+            <ul class="user-info">
+                <li>
+                    Mi fecha de nacimiento:
+                    <span
+                        th:text="${userInfo['dateOfBirth']} ?: 'No especificado'"
+                    ></span>
+                    <button
+                        th:if="${userInfo['dateOfBirth'] != null}"
+                        onclick="toggleEditForm('dateOfBirth')"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        th:if="${userInfo['dateOfBirth'] == null}"
+                        onclick="toggleEditForm('dateOfBirth')"
+                    >
+                        Añadir
+                    </button>
+                    <form
+                        id="dateOfBirth-form"
+                        class="horizontal-form"
+                        th:action="@{/strava/updateUserInfo}"
+                        method="post"
+                        style="display: none"
+                        onsubmit="event.preventDefault(); submitForm(this, 'user-info-container');"
+                    >
+                        <input
+                            type="date"
+                            name="dateOfBirth"
+                            th:value="${userInfo['dateOfBirth']}"
+                            th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                            required
+                        />
+                        <button type="button" class="cancel" onclick="toggleEditForm('dateOfBirth')">Cancelar</button>
+                        <button type="submit" class="orange">
+                            Guardar
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    Mi peso:
+                    <span
+                        th:text="${userInfo['weight']} ?: 'No especificado'"
+                    ></span>
+                    <button
+                        th:if="${userInfo['weight'] != null}"
+                        onclick="toggleEditForm('weight')"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        th:if="${userInfo['weight'] == null}"
+                        onclick="toggleEditForm('weight')"
+                    >
+                        Añadir
+                    </button>
+                    <form
+                        id="weight-form"
+                        class="horizontal-form"
+                        th:action="@{/strava/updateUserInfo}"
+                        method="post"
+                        style="display: none"
+                        onsubmit="event.preventDefault(); submitForm(this, 'user-info-container');"
+                    >
+                        <input
+                            type="number"
+                            name="weight"
+                            th:value="${userInfo['weight']}"
+                            step="0.1"
+                            min="20"
+                            max="500"
+                            required
+                        />
+                        <button type="button" class="cancel" onclick="toggleEditForm('weight')">Cancelar</button>
+                        <button type="submit" class="orange">
+                            Guardar
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    Mi altura:
+                    <span
+                        th:text="${userInfo['height']} ?: 'No especificado'"
+                    ></span>
+                    <button
+                        th:if="${userInfo['height'] != null}"
+                        onclick="toggleEditForm('height')"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        th:if="${userInfo['height'] == null}"
+                        onclick="toggleEditForm('height')"
+                    >
+                        Añadir
+                    </button>
+                    <form
+                        id="height-form"
+                        class="horizontal-form"
+                        th:action="@{/strava/updateUserInfo}"
+                        method="post"
+                        style="display: none"
+                        onsubmit="event.preventDefault(); submitForm(this, 'user-info-container');"
+                    >
+                        <input
+                            type="number"
+                            name="height"
+                            th:value="${userInfo['height']}"
+                            min="0.30"
+                            max="3.0"
+                            step="0.01"
+                            required
+                        />
+                        <button type="button" class="cancel" onclick="toggleEditForm('height')">Cancelar</button>
+                        <button type="submit" class="orange">
+                            Guardar
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    Mi frecuencia cardíaca en reposo:
+                    <span
+                        th:text="${userInfo['restingHeartRate']} ?: 'No especificado'"
+                    ></span>
+                    <button
+                        th:if="${userInfo['restingHeartRate'] != null}"
+                        onclick="toggleEditForm('restingHeartRate')"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        th:if="${userInfo['restingHeartRate'] == null}"
+                        onclick="toggleEditForm('restingHeartRate')"
+                    >
+                        Añadir
+                    </button>
+                    <form
+                        id="restingHeartRate-form"
+                        class="horizontal-form"
+                        th:action="@{/strava/updateUserInfo}"
+                        method="post"
+                        style="display: none"
+                        onsubmit="event.preventDefault(); submitForm(this, 'user-info-container');"
+                    >
+                        <input
+                            type="number"
+                            name="restingHeartRate"
+                            th:value="${userInfo['restingHeartRate']}"
+                            min="20"
+                            max="200"
+                            required
+                        />
+                        <button type="button" class="cancel" onclick="toggleEditForm('restingHeartRate')">Cancelar</button>
+                        <button type="submit" class="orange">
+                            Guardar
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    Mi frecuencia cardíaca máxima:
+                    <span
+                        th:text="${userInfo['maxHeartRate']} ?: 'No especificado'"
+                    ></span>
+                    <button
+                        th:if="${userInfo['maxHeartRate'] != null}"
+                        onclick="toggleEditForm('maxHeartRate')"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        th:if="${userInfo['maxHeartRate'] == null}"
+                        onclick="toggleEditForm('maxHeartRate')"
+                    >
+                        Añadir
+                    </button>
+                    <form
+                        id="maxHeartRate-form"
+                        class="horizontal-form"
+                        th:action="@{/strava/updateUserInfo}"
+                        method="post"
+                        style="display: none"
+                        onsubmit="event.preventDefault(); submitForm(this, 'user-info-container');"
+                    >
+                        <input
+                            type="number"
+                            name="maxHeartRate"
+                            th:value="${userInfo['maxHeartRate']}"
+                            min="30"
+                            max="300"
+                            required
+                        />
+                        <button type="button" class="cancel" onclick="toggleEditForm('maxHeartRate')">Cancelar</button>
+                        <button type="submit" class="orange">
+                            Guardar
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div th:if="${userInfo == null}" class="error-card">
+        <p>
+            Error inesperado: No se ha podido cargar la información del
+            usuario.
+        </p>
+    </div>
+    <div th:replace="~{fragments/error_solicitud :: errorPopup(${userInfoUnexpectedError})}"></div>
+</th:block>

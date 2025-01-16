@@ -3,6 +3,8 @@ package com.cliente.controller;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +33,7 @@ import jakarta.validation.Valid;
 public class ClientController {
 
     private final ServiceProxy serviceProxy;
+    private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     public ClientController(ServiceProxy serviceProxy) {
         this.serviceProxy = serviceProxy;
@@ -154,11 +157,21 @@ public class ClientController {
         return "views/login";
     }
 
+    @GetMapping("/logout")
+    public String logoutUser(HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token != null) {
+            serviceProxy.logoutUser(token);  // Llamar al método de logout del serviceProxy
+        }
+        session.invalidate();  // Invalidar la sesión actual
+        return "redirect:/strava/login";  // Redirigir a la página de login
+    }
+    
     @GetMapping("/my_activity")
     public String showMyActivity(@RequestParam(required = false) String sport,
                                 @RequestParam(required = false) LocalDate startDate,
                                 @RequestParam(required = false) LocalDate endDate,
-                                @RequestParam(required = false) Boolean unexpectedError, // Recibe el parámetro de error
+                                @RequestParam(required = false) Boolean unexpectedError,
                                 Model model, HttpSession session) {
 
         String token = (String) session.getAttribute("userToken");
@@ -166,30 +179,9 @@ public class ClientController {
             return "redirect:/strava/login";
         }
 
-        // Llamadas al servicio
-        var userInfo = serviceProxy.getUserInfo(token);
-        SportType sportType = (sport != null && !sport.isEmpty()) ? SportType.valueOf(sport) : null;  // Modificación aquí
-        var filterDTO = new FilterDTO(sportType, startDate, endDate);
-        var userSessions = serviceProxy.getUserSessions(token, filterDTO);
-
-        // Verificar si userInfo es una respuesta exitosa
-        if (userInfo instanceof SuccessResponseDTO successResponseDTO) {
-            model.addAttribute("userInfo", successResponseDTO.getData());
-        } else {
-            model.addAttribute("userInfo", null);
-        }
-
-        // Verificar si userSessions es una respuesta exitosa
-        if (userSessions instanceof SuccessResponseDTO successResponseDTO) {
-            model.addAttribute("userSessions", successResponseDTO.getValue("sessions"));
-        } else {
-            model.addAttribute("userSessions", null);
-        }
-
-        // Añadir filtros al modelo
-        model.addAttribute("sport", sport);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        // Obtener la información necesaria
+        getUserInfo(model, session);
+        getTrainingSessions(sport, startDate, endDate, model, session);
 
         // Si unexpectedError es true, añadir al modelo para mostrar en la vista
         if (unexpectedError != null && unexpectedError) {
@@ -198,43 +190,104 @@ public class ClientController {
 
         return "views/my_activity";
     }
+
+    // Función auxiliar para añadir la información de usuario al modelo
+    public void getUserInfo(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            model.addAttribute("userInfo", null);
+        }
+    
+        var userInfo = serviceProxy.getUserInfo(token);
+    
+        if (userInfo instanceof SuccessResponseDTO successResponseDTO) {
+            model.addAttribute("userInfo", successResponseDTO.getData());
+        } else {
+            model.addAttribute("userInfo", null);
+        }
+    }
+    
+    // Función auxiliar para añadir las sesiones de entrenamiento al modelo
+    public void getTrainingSessions(String sport,LocalDate startDate, LocalDate endDate,
+                                    Model model, HttpSession session) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            model.addAttribute("userSessions", null);
+        }
+    
+        SportType sportType = (sport != null && !sport.isEmpty()) ? SportType.valueOf(sport) : null;
+        var filterDTO = new FilterDTO(sportType, startDate, endDate);
+        var userSessions = serviceProxy.getUserSessions(token, filterDTO);
+    
+        if (userSessions instanceof SuccessResponseDTO successResponseDTO) {
+            model.addAttribute("userSessions", successResponseDTO.getValue("sessions"));
+        } else {
+            model.addAttribute("userSessions", null);
+        }
+    
+        // Actualizar los atributos de deporte, fecha de inicio y fecha de fin en el modelo
+        model.addAttribute("sport", sport);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+    
+    }
     
     @PostMapping("/updateUserInfo")
     public String updateUserInfo(@Valid @ModelAttribute("userPhysicalInfoDTO") UserPhysicalInfoDTO userPhysicalInfoDTO, 
-                                BindingResult bindingResult, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+                                BindingResult bindingResult, HttpSession session, Model model) {
 
         String token = (String) session.getAttribute("userToken");
-        if (token == null) {
-            return "redirect:/strava/login";
+        if (token != null) {
+            if (!(bindingResult.hasErrors())) {
+                var response = serviceProxy.updateUserInfo(token, userPhysicalInfoDTO);
+                if (!(response instanceof SuccessResponseDTO)) {
+                    model.addAttribute("userInfoUnexpectedError", true);
+                } else {
+                    // Recargar la información de usuario
+                    getUserInfo(model, session);
+                }
+            }
         }
+        return "fragments/user_info :: userInfo";
+    }
 
-        // Verificar si hay errores de validación
-        if (bindingResult.hasErrors()) {
-            return "views/my_activity";
-        }                         
+    @PostMapping("/filterSessions")
+    public String filterSessions(@RequestParam(required = false) String sport,
+                                 @RequestParam(required = false) LocalDate startDate,
+                                 @RequestParam(required = false) LocalDate endDate,
+                                 Model model, HttpSession session) {
 
-        var response = serviceProxy.updateUserInfo(token, userPhysicalInfoDTO);
-        if (response instanceof SuccessResponseDTO) {
-            return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
-        } else {
-            redirectAttributes.addFlashAttribute("unexpectedError", true);
-            return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
-        }
+        getTrainingSessions(sport, startDate, endDate, model, session);
+
+        return "fragments/training_sessions :: trainingSessions";
     }
 
     @PostMapping("/deleteSession")
-    public String deleteSession(@RequestParam UUID sessionId, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String deleteSession(@RequestParam UUID sessionId, 
+                                @RequestParam(required = false) String sport,
+                                @RequestParam(required = false) LocalDate startDate, 
+                                @RequestParam(required = false) LocalDate endDate,
+                                HttpSession session, 
+                                Model model) {
+        // Obtener el token de la sesión
         String token = (String) session.getAttribute("userToken");
-        if (token == null) {
-            return "redirect:/strava/login";
+        
+        // Verificar si el token es válido
+        if (token != null) {
+            // Llamar al servicio para eliminar la sesión
+            var response = serviceProxy.deleteSession(token, sessionId);
+            
+            // Verificar si la eliminación fue exitosa
+            if (!(response instanceof SuccessResponseDTO)) {
+                model.addAttribute("sessionUnexpectedError", true);
+            } else {
+                // Si la eliminación fue exitosa, recargar las sesiones de entrenamiento
+                getTrainingSessions(sport, startDate, endDate, model, session);
+            }
         }
-        var response = serviceProxy.deleteSession(token, sessionId);
-        if (response instanceof SuccessResponseDTO) {
-            return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
-        } else {
-            redirectAttributes.addFlashAttribute("unexpectedError", true);
-        }
-        return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
+        
+        // Devolver un fragmento que actualice las sesiones de entrenamiento en la vista
+        return "fragments/training_sessions :: trainingSessions";  // Esto actualizará solo el fragmento de las sesiones
     }
 
     @GetMapping("/new_session")

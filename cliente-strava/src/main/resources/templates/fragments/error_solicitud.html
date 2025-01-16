@@ -1,0 +1,8 @@
+<th:block th:fragment="errorPopup(unexpectedError)">
+    <div th:if="${unexpectedError == true}" class="popup" id="error-popup">
+        <div class="popup-content">
+            <p>Se ha producido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.</p>
+            <button class="orange" onclick="closePopup('error-popup')">Aceptar</button>
+        </div>
+    </div>
+</th:block>
