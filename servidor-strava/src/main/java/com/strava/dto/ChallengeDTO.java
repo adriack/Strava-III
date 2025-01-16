@@ -1,6 +1,8 @@
 package com.strava.dto;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -121,4 +123,17 @@ public class ChallengeDTO {
 
     public UUID getCreatorId() { return creatorId; }
     public void setCreatorId(UUID creatorId) { this.creatorId = creatorId; }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("name", name);
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
+        map.put("objectiveValue", objectiveValue);
+        map.put("objectiveType", objectiveType);
+        map.put("sport", sport);
+        map.put("creatorId", creatorId);
+        return map;
+    }
 }

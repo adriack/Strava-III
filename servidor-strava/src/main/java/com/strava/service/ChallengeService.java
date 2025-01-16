@@ -178,6 +178,17 @@ public class ChallengeService {
         return new ResponseWrapper(200, "challenges", challengeDTOs);
     }
 
+    public ResponseWrapper getChallengeById(UUID challengeId) {
+        Challenge challenge = challengeDAO.findById(challengeId).orElse(null);
+
+        if (challenge == null) {
+            return new ResponseWrapper(404, "error", "Challenge not found.");
+        }
+
+        ChallengeDTO challengeDTO = new ChallengeDTO(challenge);
+        return new ResponseWrapper(200, challengeDTO.toMap());
+    }
+
     private double calculateProgress(User user, Challenge challenge) {
         // Obtener sesiones de entrenamiento del usuario dentro del rango de fechas del reto
         Pageable pageable = Pageable.unpaged(); // Sin límite de sesiones

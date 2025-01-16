@@ -147,4 +147,17 @@ public class ChallengeController {
         return response.toResponseEntity();
     }
 
+    @Operation(summary = "Get challenge by ID", description = "Fetches a challenge by its ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Challenge retrieved successfully",
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n    \"id\": \"94d6a98a-6594-4c31-825b-de588f701a47\",\n    \"name\": \"Marathon Training\",\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\",\n    \"objectiveValue\": 42.2,\n    \"objectiveType\": \"DISTANCIA\",\n    \"sport\": \"RUNNING\",\n    \"creatorId\": \"94d6a98a-6594-4c31-825b-de588f701a47\"\n  }"))),
+        @ApiResponse(responseCode = "404", description = "Not Found - Challenge not found",
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"Challenge not found.\"\n}")))
+    })
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<?> getChallengeById(@PathVariable UUID challengeId) {
+        ResponseWrapper response = challengeService.getChallengeById(challengeId);
+        return response.toResponseEntity();
+    }
+
 }
