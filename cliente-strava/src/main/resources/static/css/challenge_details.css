@@ -1,0 +1,78 @@
+#highlight {
+    font-weight: bold;
+    color: orange;
+    margin: -12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.card .title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.card .title a {
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9em;
+}
+
+.card .title a:hover {
+    filter: brightness(0.9);
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    font-size: 0.7em;
+    height: 20px; /* Aumentar la altura para más padding vertical */
+    margin-right: 10px;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 10px; /* Añadir padding a la izquierda */
+    font-weight: bold;
+    justify-content: flex-start; /* Alinear el texto a la izquierda */
+}
+
+.card {
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+ol li {
+    list-style-position: inside; /* Asegurar que los números estén dentro del contenedor */
+}
+
+ol li p {
+    display: inline;
+}
+
+.accept-button {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+button[disabled] {
+    background-color: rgb(207, 197, 177);
+    cursor: not-allowed;
+}
+
+button[disabled]:hover {
+    filter: none;
+}

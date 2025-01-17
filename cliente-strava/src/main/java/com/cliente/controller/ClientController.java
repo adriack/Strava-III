@@ -2,17 +2,17 @@ package com.cliente.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +37,6 @@ import jakarta.validation.Valid;
 public class ClientController {
 
     private final ServiceProxy serviceProxy;
-    private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     public ClientController(ServiceProxy serviceProxy) {
         this.serviceProxy = serviceProxy;
@@ -206,6 +205,8 @@ public class ClientController {
     
         if (userInfo instanceof SuccessResponseDTO successResponseDTO) {
             model.addAttribute("userInfo", successResponseDTO.getData());
+            // Guardar el ID de usuario en la sesión
+            session.setAttribute("userId", successResponseDTO.getValue("id"));
         } else {
             model.addAttribute("userInfo", null);
         }
@@ -405,6 +406,95 @@ public class ClientController {
             redirectAttributes.addFlashAttribute("unexpectedError", true);
             return "redirect:/strava/my_challenges";
         }
+    }
+
+    @GetMapping("/challenges/{id}")
+    public String showChallengeDetails(@PathVariable UUID id, 
+                                       @RequestParam(required = false) Boolean unexpectedError, 
+                                       Model model, HttpSession session) {
+
+        // Obtener la información del reto
+        var response = serviceProxy.getChallenge(id);
+        switch (response) {
+            case null -> model.addAttribute("challenge", null);
+            case SuccessResponseDTO successResponseDTO -> model.addAttribute("challenge", successResponseDTO.getData());
+            case ClientErrorResponseDTO errorResponseDTO -> {
+                var errors = errorResponseDTO.getErrors();
+                if (errors.containsKey("error") && errors.get("error").contains("not found")) {
+                    return "redirect:/strava/my_challenges/";
+                }
+                model.addAttribute("challenge", null);
+            }
+            default -> model.addAttribute("challenge", null);
+        }
+
+        // Obtener los participantes
+        var participantsResponse = serviceProxy.getChallengeParticipants(id);
+        if (participantsResponse instanceof SuccessResponseDTO successResponseDTO) {
+            var participants = (List<Map<String, Object>>) successResponseDTO.getValue("participants");
+            // Ordenar los participantes por progreso en orden descendente
+            participants.sort(Comparator.comparingInt(p -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> participant = (Map<String, Object>) p;
+                return (int) participant.get("progress");
+            }).reversed());
+            model.addAttribute("participants", participants);
+        } else {
+            model.addAttribute("participants", null);
+        }
+          
+        // Obtener el ID de usuario de la sesión y añadirlo al modelo
+        String userId = (String) session.getAttribute("userId");
+        model.addAttribute("logged", userId != null);
+
+        if (userId == null) {
+            userId = "_";
+        }
+        model.addAttribute("userId", userId);
+
+        // Verificar si el usuario ha aceptado el reto
+        if (!userId.equals("_")) {
+            var acceptedResponse = serviceProxy.isChallengeAcceptedByUser(id, UUID.fromString(userId));
+            if (acceptedResponse instanceof SuccessResponseDTO successResponseDTO) {
+                boolean isAccepted = (boolean) successResponseDTO.getValue("isAccepted");
+                model.addAttribute("isChallengeAccepted", isAccepted);
+            } else {
+                model.addAttribute("isChallengeAccepted", null);
+            }
+        }
+
+        // Si unexpectedError es true, añadir al modelo para mostrar en la vista
+        if (unexpectedError != null && unexpectedError) {
+            model.addAttribute("unexpectedError", true);
+        }
+
+        return "views/challenge_details";
+    }
+
+    @PostMapping("/challenges/{id}/accept")
+    public String acceptChallenge(@PathVariable UUID id, HttpSession session, RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("userToken");
+        if (token == null) {
+            return "redirect:/strava/login";
+        }
+
+        var response = serviceProxy.acceptChallenge(token, id);
+        if (response instanceof SuccessResponseDTO) {
+            return "redirect:/strava/my_challenges/{id}";
+        } else {
+            redirectAttributes.addFlashAttribute("unexpectedError", true);
+            return "redirect:/strava/my_challenges/{id}";
+        }
+    }
+
+    @GetMapping
+    public String redirectToLogin() {
+        return "redirect:/strava/login";
+    }
+
+    @GetMapping("/challenges")
+    public String redirectToDiscoverChallenges() {
+        return "redirect:/strava/discover_challenges";
     }
 
 }

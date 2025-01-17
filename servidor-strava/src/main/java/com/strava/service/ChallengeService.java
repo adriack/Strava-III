@@ -1,5 +1,7 @@
 package com.strava.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -189,6 +191,21 @@ public class ChallengeService {
         return new ResponseWrapper(200, challengeDTO.toMap());
     }
 
+    public ResponseWrapper isChallengeAcceptedByUser(UUID userId, UUID challengeId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return new ResponseWrapper(404, "error", "User not found.");
+        }
+
+        Challenge challenge = challengeDAO.findById(challengeId).orElse(null);
+        if (challenge == null) {
+            return new ResponseWrapper(404, "error", "Challenge not found.");
+        }
+
+        boolean isAccepted = challenge.getUsers().contains(user);
+        return new ResponseWrapper(200, "isAccepted", isAccepted);
+    }
+
     private double calculateProgress(User user, Challenge challenge) {
         // Obtener sesiones de entrenamiento del usuario dentro del rango de fechas del reto
         Pageable pageable = Pageable.unpaged(); // Sin límite de sesiones
@@ -208,7 +225,8 @@ public class ChallengeService {
 
         double objectiveValue = challenge.getObjectiveValue();
 
-        return (totalValue / objectiveValue) * 100;
+        double progress = (totalValue / objectiveValue) * 100;
+        return BigDecimal.valueOf(progress).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
 }

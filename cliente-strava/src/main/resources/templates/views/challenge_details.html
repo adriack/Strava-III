@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Detalles del desafío</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+        <link rel="stylesheet" th:href="@{/css/header.css}" />
+        <link rel="stylesheet" th:href="@{/css/challenge_details.css}" />
+    </head>
+    <body>
+        <th:block th:if="${logged == true}">
+            <th:block
+                th:replace="~{fragments/header_logged :: header}"
+            ></th:block>
+        </th:block>
+
+        <th:block th:if="${logged == false}">
+            <th:block
+                th:replace="~{fragments/header_unlogged :: header}"
+            ></th:block>
+        </th:block>
+
+        <main>
+            <div th:if="${challenge != null}" id="challenge-details-container">
+                <h1 th:text="${challenge.name}"></h1>
+                <button
+                    class="orange accept-button"
+                    th:if="${isChallengeAccepted == false}"
+                    th:onclick="'location.href=\'/strava/challenges/' + ${challenge.id} + '/accept\''"
+                >
+                    Aceptar reto
+                </button>
+                <button
+                    class="accept-button"
+                    th:if="${isChallengeAccepted == true}"
+                    disabled
+                >
+                    Reto ya aceptado
+                </button>
+
+                <section class="card">
+                    <h2>Información del reto</h2>
+                    <p>
+                        <strong>Deporte:</strong>
+                        <span
+                            th:text="${#strings.capitalize(#strings.toLowerCase(challenge.sport))}"
+                        ></span>
+                    </p>
+                    <p>
+                        <strong>Fecha de inicio:</strong>
+                        <span th:text="${challenge.startDate}"></span>
+                    </p>
+                    <p>
+                        <strong>Fecha de finalización:</strong>
+                        <span th:text="${challenge.endDate}"></span>
+                    </p>
+                    <p>
+                        <strong>Objetivo:</strong>
+                        <span
+                            th:text="${challenge.objectiveValue} + ' ' + (${challenge.objectiveType} == 'DISTANCIA' ? 'km' : 'min')"
+                        ></span>
+                    </p>
+                </section>
+            </div>
+            <div th:if="${challenge == null}" class="error-card">
+                <p>
+                    Error inesperado: No se ha podido cargar la información del
+                    reto.
+                </p>
+            </div>
+
+            <section class="card">
+                <div class="title">
+                    <h2>Participantes</h2>
+                    <a
+                        class="orange"
+                        th:if="${isChallengeAccepted == true}"
+                        href="#highlight"
+                        onclick="highlightParticipant(); return false;"
+                    >
+                        Ver mi progreso
+                    </a>
+                </div>
+                <ol id="participants-container" th:if="${participants != null}">
+                    <th:block th:each="participant : ${participants}">
+                        <li
+                            th:id="${participant['userId']} == ${userId} ? 'highlight' : ''"
+                        >
+                            <p th:text="${participant['userName']}"></p>
+                            <div class="progress-container">
+                                <div
+                                    class="progress-bar orange"
+                                    th:style="'width:' + ${participant['progress']} + '%'"
+                                >
+                                    <span
+                                        th:text="${participant['progress']} + '%'"
+                                    ></span>
+                                </div>
+                            </div>
+                        </li>
+                    </th:block>
+                </ol>
+                <div th:if="${participants == null}" class="error-card">
+                    <p>
+                        Error inesperado: No se han podido cargar los
+                        participantes.
+                    </p>
+                </div>
+                <div
+                    th:replace="~{fragments/error_solicitud :: errorPopup(${unexpectedError})}"
+                ></div>
+            </section>
+        </main>
+        <script src="/js/scripts.js"></script>
+        <script src="/js/challenge_details.js"></script>
+    </body>
+</html>

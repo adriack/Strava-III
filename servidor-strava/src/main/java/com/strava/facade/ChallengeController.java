@@ -160,4 +160,18 @@ public class ChallengeController {
         return response.toResponseEntity();
     }
 
+    @Operation(summary = "Check if a user has accepted a challenge", description = "Checks if a user has accepted a specific challenge.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Check completed successfully",
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"isAccepted\": true\n}"))),
+        @ApiResponse(responseCode = "404", description = "Not Found - User or Challenge not found",
+            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"error\": \"User not found.\"\n}")))
+    })
+    @Transactional
+    @GetMapping("/{challengeId}/isAccepted")
+    public ResponseEntity<?> isChallengeAcceptedByUser(@PathVariable UUID challengeId, @RequestParam UUID userId) {
+        ResponseWrapper response = challengeService.isChallengeAcceptedByUser(userId, challengeId);
+        return response.toResponseEntity();
+    }
+
 }

@@ -1,7 +1,7 @@
 <ul class="challenges-container" th:fragment="challenge_list(challenges)">
     <li th:each="challenge : ${challenges}">
         <a
-            th:href="@{'/challenges/' + ${challenge['id']}}"
+            th:href="@{'/strava/challenges/' + ${challenge['id']}}"
             class="challenge-card"
             th:attr="data-progress=${challenge.progress}"
         >

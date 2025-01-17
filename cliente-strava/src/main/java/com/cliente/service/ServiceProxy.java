@@ -223,8 +223,18 @@ public class ServiceProxy {
         return handleRequest(request);
     }
 
+    public Object getChallenge(UUID challengeId) {
+        HttpGet request = new HttpGet(serverBaseUrl + "/challenges/" + challengeId);
+        return handleRequest(request);
+    }
+
     public Object getChallengeParticipants(UUID challengeId) {
         HttpGet request = new HttpGet(serverBaseUrl + "/challenges/" + challengeId + "/participants");
+        return handleRequest(request);
+    }
+
+    public Object isChallengeAcceptedByUser(UUID challengeId, UUID userId) {
+        HttpGet request = new HttpGet(serverBaseUrl + "/challenges/" + challengeId + "/isAccepted?userId=" + userId);
         return handleRequest(request);
     }
 }
