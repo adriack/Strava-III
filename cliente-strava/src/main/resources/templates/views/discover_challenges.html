@@ -1,66 +1,73 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
     <head>
-        <title>Mi Actividad</title>
+        <meta charset="UTF-8" />
+        <title>Descubrir retos</title>
         <link rel="stylesheet" th:href="@{/css/styles.css}" />
         <link rel="stylesheet" th:href="@{/css/header.css}" />
-        <link rel="stylesheet" th:href="@{/css/my_activity.css}" />
+        <link rel="stylesheet" th:href="@{/css/challenges_list.css}" />
     </head>
     <body>
-        <th:block th:replace="~{fragments/header_logged :: header}"></th:block>
+        <th:block th:if="${logged == true}">
+            <th:block
+                th:replace="~{fragments/header_logged :: header}"
+            ></th:block>
+        </th:block>
+        <th:block th:if="${logged == false}">
+            <th:block
+                th:replace="~{fragments/header_unlogged :: header}"
+            ></th:block>
+        </th:block>
+
         <main>
-            <h1>Mi actividad</h1>
-
-            <section>
-                <div id="user-info-container">
-                    <th:block th:replace="~{fragments/user_info :: userInfo}"></th:block>
-                </div>
-            </section>
-
-            <section>
-                <h2>Mis sesiones de entrenamiento</h2>
+            <h1>Descubrir retos</h1>
+            <div class="filter-container">
                 <form
                     id="filter-form"
                     class="horizontal-form"
-                    th:action="@{/strava/filterSessions}"
+                    th:action="@{/strava/filterChallenges}"
                     method="post"
                 >
                     <label for="sport">Deporte:</label>
-                    <select name="sport" id="sport">
-                        <option value="" th:selected="${sport == null}">
-                            Todos
-                        </option>
+                    <select id="sport" name="sport">
+                        <option value="">Todos</option>
                         <option
                             value="CICLISMO"
                             th:selected="${sport == 'CICLISMO'}"
                         >
                             Ciclismo
                         </option>
-                        <option value="RUNNING" th:selected="${sport == 'RUNNING'}">
+                        <option
+                            value="RUNNING"
+                            th:selected="${sport == 'RUNNING'}"
+                        >
                             Running
                         </option>
                     </select>
+
                     <label for="startDate">Desde:</label>
                     <input
                         type="date"
-                        name="startDate"
                         id="startDate"
+                        name="startDate"
                         th:value="${startDate}"
                     />
+
                     <label for="endDate">Hasta:</label>
                     <input
                         type="date"
-                        name="endDate"
                         id="endDate"
+                        name="endDate"
                         th:value="${endDate}"
                     />
                 </form>
-                <div id="results-container">
-                    <th:block th:replace="~{fragments/training_sessions :: trainingSessions}"></th:block>
-                </div>
-            </section>
+            </div>
 
-            <div th:replace="~{fragments/error_solicitud :: errorPopup(${unexpectedError})}"></div>
+            <div id="results-container">
+                <div
+                    th:replace="~{fragments/challenge_list :: challenge_list(${challenges})}"
+                ></div>
+            </div>
         </main>
         <script src="/js/scripts.js"></script>
         <script src="/js/filters.js"></script>

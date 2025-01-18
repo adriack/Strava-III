@@ -10,7 +10,7 @@
                     <a href="#">Retos <svg xmlns="http://www.w3.org/2000/svg" class="arrow-down" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m7 10l5 5l5-5"/></svg></a>
                     <div class="dropdown-content">
                         <a href="/strava/my_challenges">Mis retos</a>
-                        <a href="/strava/discover_challenges">Descubrir retos</a>
+                        <a id="discoverChallengesLink" href="#">Descubrir retos</a>
                         <a href="/strava/new_challenge">Publicar reto</a>
                     </div>
                 </div>
@@ -45,6 +45,11 @@
             document.getElementById(
                 "myActivityLink"
             ).href = `/strava/my_activity?startDate=${formattedDate}`;
+
+            const formattedToday = today.toISOString().split('T')[0];
+            document.getElementById(
+                "discoverChallengesLink"
+            ).href = `/strava/discover_challenges?startDate=${formattedToday}&endDate=${formattedToday}`;
         });
     </script>
 </header>

@@ -2,11 +2,18 @@
     <nav> 
         <ul>
             <li><img th:src="@{/images/logo.webp}" alt="Logo Strava"></li>
-            <li><a href="/strava/discover_challenges">Descubrir retos</a></li>
+            <li><a id="discoverChallengesLink" href="#">Descubrir retos</a></li>
         </ul>
         <ul>
             <li><button class="orange" onclick="location.href='/strava/register'"> Registrarse </button></li>
             <li><button onclick="location.href='/strava/login'"> Iniciar sesión </button></li>
         </ul>
     </nav>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById("discoverChallengesLink").href = `/strava/discover_challenges?startDate=${formattedDate}&endDate=${formattedDate}`;
+        });
+    </script>
 </header>

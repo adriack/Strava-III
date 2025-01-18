@@ -202,7 +202,35 @@ public class ServiceProxy {
     }
 
     public Object getActiveChallenges(Object filterDTO) {
-        HttpGet request = new HttpGet(serverBaseUrl + "/challenges");
+        FilterDTO filter = (FilterDTO) filterDTO;
+
+        // Crear StringBuilder para construir la URL de manera eficiente
+        StringBuilder urlBuilder = new StringBuilder(serverBaseUrl + "/challenges?");
+
+        // Agregar parámetros a la URL solo si no son nulos ni vacíos
+        if (filter.getStartDate() != null) {
+            urlBuilder.append("startDate=").append(filter.getStartDate()).append("&");
+        }
+        if (filter.getEndDate() != null) {
+            urlBuilder.append("endDate=").append(filter.getEndDate()).append("&");
+        }
+        if (filter.getSport() != null && !filter.getSport().toString().isEmpty()) {
+            urlBuilder.append("sport=").append(filter.getSport().toString()).append("&");
+        }
+        if (filter.getLimit() != null) {
+            urlBuilder.append("limit=").append(filter.getLimit()).append("&");
+        }
+
+        // Eliminar el último '&' si se añadió alguno
+        String url = urlBuilder.toString();
+        if (url.endsWith("&")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        // Crear la solicitud GET
+        HttpGet request = new HttpGet(url);
+
+        // Manejar la solicitud y devolver la respuesta
         return handleRequest(request);
     }
 

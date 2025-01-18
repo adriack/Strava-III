@@ -20,6 +20,11 @@ public class LoginDTO {
         // Constructor vacío
     }
 
+    public LoginDTO(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     // Getters y Setters
     public String getEmail() {
         return email;

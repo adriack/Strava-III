@@ -37,36 +37,45 @@ import jakarta.validation.Valid;
 public class ClientController {
 
     private final ServiceProxy serviceProxy;
-
-    public ClientController(ServiceProxy serviceProxy) {
-        this.serviceProxy = serviceProxy;
-    }
-
-    @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("registrationDTO") RegistrationDTO user, 
-                               BindingResult bindingResult, Model model) {
-        // Restablecer todos los atributos de error al inicio
-        model.addAttribute("unexpectedError", false);
-        model.addAttribute("invalidCredentials", false);
-        model.addAttribute("alreadyRegistered", false);
-
-        if (bindingResult.hasErrors()) {
-            // Si hay errores en los campos del formulario, volver a mostrar el formulario con los errores
-            model.addAttribute("registrationDTO", user);
-            return "views/register";  // Esto renderiza la vista de registro con los mensajes de error
-        } else {
-            // Si no se encuentran errores de validación, procede al registro
-            var response = serviceProxy.registerUser(user);
-            
-            // Verifica la respuesta del registro
-            switch (response) {
-                case null -> {
-                    model.addAttribute("unexpectedError", true);
-                    return "views/register";
-                }
-                case SuccessResponseDTO successResponse -> {
-                    model.addAttribute("response", successResponse.getData());
-                    return "views/register";  // Aquí puedes redirigir o mostrar una vista de éxito
+    
+        public ClientController(ServiceProxy serviceProxy) {
+            this.serviceProxy = serviceProxy;
+        }
+    
+        @PostMapping("/register")
+        public String registerUser(@Valid @ModelAttribute("registrationDTO") RegistrationDTO user, 
+                                   BindingResult bindingResult, Model model, HttpSession session) {
+            // Restablecer todos los atributos de error al inicio
+            model.addAttribute("unexpectedError", false);
+            model.addAttribute("invalidCredentials", false);
+            model.addAttribute("alreadyRegistered", false);
+    
+            if (bindingResult.hasErrors()) {
+                // Si hay errores en los campos del formulario, volver a mostrar el formulario con los errores
+                model.addAttribute("registrationDTO", user);
+                return "views/register";  // Esto renderiza la vista de registro con los mensajes de error
+            } else {
+                // Si no se encuentran errores de validación, procede al registro
+                var response = serviceProxy.registerUser(user);
+                
+                // Verifica la respuesta del registro
+                switch (response) {
+                    case null -> {
+                        model.addAttribute("unexpectedError", true);
+                        return "views/register";
+                    }
+                    case SuccessResponseDTO successResponse -> {
+                    // Realizar login automático
+                    session.setAttribute("userId", successResponse.getValue("id"));
+                    var loginDTO = new LoginDTO(user.getEmail(), user.getPassword());
+                    var loginResponse = serviceProxy.loginUser(loginDTO);
+                    if (loginResponse instanceof SuccessResponseDTO loginSuccessResponse) {
+                        session.setAttribute("userToken", loginSuccessResponse.getValue("token"));
+                        return "redirect:/strava/my_activity?startDate=" + LocalDate.now().withDayOfMonth(1);
+                    } else {
+                        model.addAttribute("unexpectedError", true);
+                        return "views/register";
+                    }
                 }
                 case ClientErrorResponseDTO errorResponse -> {
                     var errors = errorResponse.getErrors();
@@ -331,6 +340,7 @@ public class ClientController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping("/my_challenges")
     public String showMyChallenges(@RequestParam(required = false) Boolean unexpectedError, Model model, HttpSession session) {
         String token = (String) session.getAttribute("userToken");
@@ -417,7 +427,16 @@ public class ClientController {
         var response = serviceProxy.getChallenge(id);
         switch (response) {
             case null -> model.addAttribute("challenge", null);
-            case SuccessResponseDTO successResponseDTO -> model.addAttribute("challenge", successResponseDTO.getData());
+            case SuccessResponseDTO successResponseDTO -> {
+                var challenge = successResponseDTO.getData();
+                model.addAttribute("challenge", challenge);
+                LocalDate now = LocalDate.now();
+                LocalDate startDate = LocalDate.parse((String) challenge.get("startDate"));
+                LocalDate endDate = LocalDate.parse((String) challenge.get("endDate"));
+                boolean isChallengeActive = (startDate.isBefore(now) || startDate.isEqual(now)) &&
+                                            (endDate.isAfter(now) || endDate.isEqual(now));
+                model.addAttribute("isChallengeActive", isChallengeActive);
+            }
             case ClientErrorResponseDTO errorResponseDTO -> {
                 var errors = errorResponseDTO.getErrors();
                 if (errors.containsKey("error") && errors.get("error").contains("not found")) {
@@ -431,13 +450,23 @@ public class ClientController {
         // Obtener los participantes
         var participantsResponse = serviceProxy.getChallengeParticipants(id);
         if (participantsResponse instanceof SuccessResponseDTO successResponseDTO) {
+            @SuppressWarnings("unchecked")
             var participants = (List<Map<String, Object>>) successResponseDTO.getValue("participants");
+            
             // Ordenar los participantes por progreso en orden descendente
-            participants.sort(Comparator.comparingInt(p -> {
+            participants.sort(Comparator.comparingDouble(p -> {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> participant = (Map<String, Object>) p;
-                return (int) participant.get("progress");
+                Object progress = participant.get("progress");
+                
+                // Asegurar que el progreso sea tratado como un Double
+                if (progress instanceof Number number) {
+                    return number.doubleValue();
+                } else {
+                    return 0.0; // Valor por defecto si no hay progreso válido
+                }
             }).reversed());
+            
             model.addAttribute("participants", participants);
         } else {
             model.addAttribute("participants", null);
@@ -480,11 +509,57 @@ public class ClientController {
 
         var response = serviceProxy.acceptChallenge(token, id);
         if (response instanceof SuccessResponseDTO) {
-            return "redirect:/strava/my_challenges/{id}";
+            return "redirect:/strava/challenges/{id}";
         } else {
             redirectAttributes.addFlashAttribute("unexpectedError", true);
-            return "redirect:/strava/my_challenges/{id}";
+            return "redirect:/strava/challenges/{id}";
         }
+    }
+
+    @GetMapping("/discover_challenges")
+    public String showDiscoverChallenges(@RequestParam(required = false) String sport,
+                                         @RequestParam(required = false) LocalDate startDate,
+                                         @RequestParam(required = false) LocalDate endDate,
+                                         Model model, HttpSession session) {
+        
+        // Verificar si el usuario ha iniciado sesión
+        String userId = (String) session.getAttribute("userId");
+        model.addAttribute("logged", userId != null);
+
+        // Obtener los retos
+        getChallenges(sport, startDate, endDate, model, session);
+
+        return "views/discover_challenges";
+    }
+
+    // Función auxiliar para añadir los retos al modelo
+    public void getChallenges(String sport, LocalDate startDate, LocalDate endDate,
+                              Model model, HttpSession session) {
+        SportType sportType = (sport != null && !sport.isEmpty()) ? SportType.valueOf(sport) : null;
+        var filterDTO = new FilterDTO(sportType, startDate, endDate);
+        var challenges = serviceProxy.getActiveChallenges(filterDTO);
+
+        if (challenges instanceof SuccessResponseDTO successResponseDTO) {
+            model.addAttribute("challenges", successResponseDTO.getValue("challenges"));
+        } else {
+            model.addAttribute("challenges", null);
+        }
+
+        // Actualizar los atributos de deporte, fecha de inicio y fecha de fin en el modelo
+        model.addAttribute("sport", sport);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+    }
+
+    @PostMapping("/filterChallenges")
+    public String filterChallenges(@RequestParam(required = false) String sport,
+                                   @RequestParam(required = false) LocalDate startDate,
+                                   @RequestParam(required = false) LocalDate endDate,
+                                   Model model, HttpSession session) {
+
+        getChallenges(sport, startDate, endDate, model, session);
+
+        return "fragments/challenge_list :: challenge_list";
     }
 
     @GetMapping
@@ -494,7 +569,8 @@ public class ClientController {
 
     @GetMapping("/challenges")
     public String redirectToDiscoverChallenges() {
-        return "redirect:/strava/discover_challenges";
+        LocalDate today = LocalDate.now();
+        return "redirect:/strava/discover_challenges?startDate=" + today + "&endDate=" + today;
     }
 
 }

@@ -23,13 +23,15 @@
         <main>
             <div th:if="${challenge != null}" id="challenge-details-container">
                 <h1 th:text="${challenge.name}"></h1>
-                <button
-                    class="orange accept-button"
-                    th:if="${isChallengeAccepted == false}"
-                    th:onclick="'location.href=\'/strava/challenges/' + ${challenge.id} + '/accept\''"
+                <form
+                    th:if="${isChallengeAccepted == false and isChallengeActive == true}"
+                    th:action="@{'/strava/challenges/' + ${challenge.id} + '/accept'}"
+                    method="post"
                 >
-                    Aceptar reto
-                </button>
+                    <button type="submit" class="orange accept-button">
+                        Aceptar reto
+                    </button>
+                </form>
                 <button
                     class="accept-button"
                     th:if="${isChallengeAccepted == true}"
@@ -37,8 +39,15 @@
                 >
                     Reto ya aceptado
                 </button>
+                <button
+                    class="accept-button"
+                    th:if="${isChallengeActive == false and isChallengeAccepted == false}"
+                    disabled
+                >
+                    Reto no disponible para la fecha actual
+                </button>
 
-                <section class="card">
+                <section id="info-card" class="card">
                     <h2>Información del reto</h2>
                     <p>
                         <strong>Deporte:</strong>
@@ -69,7 +78,7 @@
                 </p>
             </div>
 
-            <section class="card">
+            <section id="participants-card" class="card">
                 <div class="title">
                     <h2>Participantes</h2>
                     <a
@@ -82,6 +91,9 @@
                     </a>
                 </div>
                 <ol id="participants-container" th:if="${participants != null}">
+                    <th:block th:if="${#lists.isEmpty(participants)}">
+                        <p>Aún no hay nadie por aquí. Sé el primero en unirte.</p>
+                    </th:block>
                     <th:block th:each="participant : ${participants}">
                         <li
                             th:id="${participant['userId']} == ${userId} ? 'highlight' : ''"
@@ -89,7 +101,8 @@
                             <p th:text="${participant['userName']}"></p>
                             <div class="progress-container">
                                 <div
-                                    class="progress-bar orange"
+                                    class="progress-bar"
+                                    th:classappend="${participant['progress']} >= 100 ? 'orange' : 'brown'"
                                     th:style="'width:' + ${participant['progress']} + '%'"
                                 >
                                     <span

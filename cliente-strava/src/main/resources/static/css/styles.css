@@ -141,3 +141,7 @@ form.horizontal-form button {
     margin-bottom: 20px;
     margin-top: -20px;
 }
+
+#filter-form {
+    margin-bottom: 20px;
+}

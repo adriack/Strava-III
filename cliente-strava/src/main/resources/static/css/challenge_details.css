@@ -1,8 +1,6 @@
 #highlight {
     font-weight: bold;
     color: orange;
-    margin: -12px;
-    padding: 12px;
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }
@@ -27,23 +25,36 @@
     filter: brightness(0.9);
 }
 
+#info-card p {
+    line-height: 1.6em;
+}
+
 .progress-container {
     display: flex;
     align-items: center;
     margin-top: 10px;
 }
 
-.progress-bar {
-    font-size: 0.7em;
-    height: 20px; /* Aumentar la altura para más padding vertical */
-    margin-right: 10px;
-    border-radius: 8px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding-left: 10px; /* Añadir padding a la izquierda */
-    font-weight: bold;
-    justify-content: flex-start; /* Alinear el texto a la izquierda */
+    .progress-bar {
+        font-size: 0.7em;
+        height: 20px; /* Aumentar la altura para más padding vertical */
+        margin-right: 10px;
+        border-radius: 8px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding-left: 10px; /* Añadir padding a la izquierda */
+        font-weight: bold;
+        justify-content: flex-start; /* Alinear el texto a la izquierda */
+    }
+
+        .progress-bar span {
+            color: black;
+        }
+
+.brown {
+    background-color: #ffb282;
+    color:black
 }
 
 .card {
@@ -56,12 +67,14 @@
 }
 
 ol li {
-    list-style-position: inside; /* Asegurar que los números estén dentro del contenedor */
+    list-style-position: inside;
+    margin: 0px -12px;
+    padding: 12px;
 }
 
-ol li p {
-    display: inline;
-}
+    ol li p {
+        display: inline;
+    }
 
 .accept-button {
     margin-bottom: 20px;
