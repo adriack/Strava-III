@@ -31,7 +31,6 @@ public class UserService {
     private final FactoriaGateway factoriaGateway;
     private final TokenService tokenService;
 
-    @Autowired
     public UserService(TokenService tokenService) {
         this.factoriaGateway = new FactoriaGateway();
         this.tokenService = tokenService;

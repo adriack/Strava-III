@@ -247,7 +247,7 @@ public class ClientController {
     }
     
     @PostMapping("/updateUserInfo")
-    public String updateUserInfo(@Valid @ModelAttribute("userPhysicalInfoDTO") UserPhysicalInfoDTO userPhysicalInfoDTO, 
+    public String updateUserInfo(@Valid @ModelAttribute() UserPhysicalInfoDTO userPhysicalInfoDTO, 
                                 BindingResult bindingResult, HttpSession session, Model model) {
 
         String token = (String) session.getAttribute("userToken");
@@ -317,7 +317,7 @@ public class ClientController {
     }
 
     @PostMapping("/createSession")
-    public String createSession(@Valid @ModelAttribute("sessionDTO") TrainingSessionDTO sessionDTO, 
+    public String createSession(@Valid @ModelAttribute() TrainingSessionDTO sessionDTO, 
                                 BindingResult bindingResult, HttpSession session, Model model,
                                 RedirectAttributes redirectAttributes) {
 
@@ -396,7 +396,7 @@ public class ClientController {
     }
 
     @PostMapping("/createChallenge")
-    public String createChallenge(@Valid @ModelAttribute("challengeDTO") ChallengeDTO challengeDTO, 
+    public String createChallenge(@Valid @ModelAttribute() ChallengeDTO challengeDTO, 
                                   BindingResult bindingResult, HttpSession session, Model model,
                                   RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("userToken");

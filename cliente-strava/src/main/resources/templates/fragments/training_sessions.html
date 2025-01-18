@@ -1,15 +1,16 @@
 <th:block th:fragment="trainingSessions">
-    <div th:if="${userSessions != null}" class="sessions-container">
+    <div
+        th:if="${userSessions != null}"
+        class="sessions-container"
+        id="sessions-container"
+    >
         <button
             id="new-session"
             onclick="window.location.href='/strava/new_session'"
         >
             +
         </button>
-        <div
-            class="session-card"
-            th:each="userSession : ${userSessions}"
-        >
+        <div class="session-card" th:each="userSession : ${userSessions}">
             <div class="session-title">
                 <h3>
                     <svg
@@ -45,10 +46,9 @@
                     <span th:text="${userSession['title']}"></span>
                 </h3>
                 <form
-                    id="delete-form-[[${userSession['id']}]]"
                     th:action="@{/strava/deleteSession(sport=${sport}, startDate=${startDate}, endDate=${endDate})}"
                     method="post"
-                    onsubmit="event.preventDefault(); submitForm(this, 'training-sessions-container');"
+                    onsubmit="event.preventDefault(); submitForm(this, 'sessions-container');"
                 >
                     <input
                         type="hidden"
@@ -56,10 +56,7 @@
                         th:value="${userSession['id']}"
                     />
                     <div class="tooltip">
-                        <button
-                            class="borrar-sesion"
-                            th:onclick="'document.getElementById('' + 'delete-form-' + ${userSession.id}).submit();'"
-                        >
+                        <button class="borrar-sesion" type="submit">
                             <svg
                                 class="icon"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -135,5 +132,7 @@
             entrenamiento.
         </p>
     </div>
-    <div th:replace="~{fragments/error_solicitud :: errorPopup(${sessionUnexpectedError})}"></div>
+    <div
+        th:replace="~{fragments/error_solicitud :: errorPopup(${sessionUnexpectedError})}"
+    ></div>
 </th:block>
