@@ -24,6 +24,7 @@
             <div th:if="${challenge != null}" id="challenge-details-container">
                 <h1 th:text="${challenge.name}"></h1>
                 <form
+                    id="accept-challenge-form"
                     th:if="${isChallengeAccepted == false and isChallengeActive == true}"
                     th:action="@{'/strava/challenges/' + ${challenge.id} + '/accept'}"
                     method="post"

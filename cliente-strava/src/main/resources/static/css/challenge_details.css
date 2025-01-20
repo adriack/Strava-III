@@ -89,3 +89,10 @@ button[disabled] {
 button[disabled]:hover {
     filter: none;
 }
+
+#accept-challenge-form {
+    max-width: none;
+    padding: 0;
+    border: none;
+    background: none;
+}

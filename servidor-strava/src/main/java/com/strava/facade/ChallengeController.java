@@ -18,7 +18,6 @@ import com.strava.dto.FilterDTO;
 import com.strava.dto.ResponseWrapper;
 import com.strava.dto.TokenDTO;
 import com.strava.service.ChallengeService;
-import com.strava.service.TokenService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +35,7 @@ public class ChallengeController {
 
     private final ChallengeService challengeService;
 
-    public ChallengeController(ChallengeService challengeService, TokenService tokenService) {
+    public ChallengeController(ChallengeService challengeService) {
         this.challengeService = challengeService;
     }
 

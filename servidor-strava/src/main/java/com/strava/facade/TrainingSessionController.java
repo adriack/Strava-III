@@ -18,7 +18,6 @@ import com.strava.dto.FilterDTO;
 import com.strava.dto.ResponseWrapper;
 import com.strava.dto.TokenDTO;
 import com.strava.dto.TrainingSessionDTO;
-import com.strava.service.TokenService;
 import com.strava.service.TrainingSessionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +36,7 @@ public class TrainingSessionController {
 
     private final TrainingSessionService trainingSessionService;
 
-    public TrainingSessionController(TrainingSessionService trainingSessionService, TokenService tokenService) {
+    public TrainingSessionController(TrainingSessionService trainingSessionService) {
         this.trainingSessionService = trainingSessionService;
     }
 

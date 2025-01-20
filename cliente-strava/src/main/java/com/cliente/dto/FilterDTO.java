@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import com.cliente.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "Filter criteria for searching challenges or training sessions.")
@@ -68,13 +67,4 @@ public class FilterDTO {
         this.limit = limit;
     }
 
-    // Validación personalizada para asegurarse de que endDate sea posterior o igual a startDate
-    @AssertTrue(message = "End date must be greater than or equal to start date.")
-    @Schema(description = "Ensures the end date is not before the start date.", hidden = true)
-    public boolean isValidDateRange() {
-        if (startDate != null && endDate != null) {
-            return !endDate.isBefore(startDate);
-        }
-        return true;  // Si no se proporcionan fechas, la validación es válida
-    }
 }

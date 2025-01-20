@@ -327,7 +327,6 @@ public class ClientController {
         }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("sessionDTO", sessionDTO);
             return "views/new_session";
         }
 

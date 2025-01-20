@@ -14,7 +14,6 @@ import com.strava.dto.RegistrationDTO;
 import com.strava.dto.ResponseWrapper;
 import com.strava.dto.TokenDTO;
 import com.strava.dto.UserPhysicalInfoDTO;
-import com.strava.service.TokenService;
 import com.strava.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +31,7 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService, TokenService tokenService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
