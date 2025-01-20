@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.strava.entity.enumeration.SportType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "Filter criteria for searching challenges or training sessions.")
